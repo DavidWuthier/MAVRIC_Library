@@ -382,6 +382,9 @@ void simulation_update(simulation_model_t *sim)
 	#ifdef CONF_CROSS
 	forces_from_servos_cross_quad(sim);
 	#endif
+	#ifdef CONF_BIROTOR
+	forces_from_servos_cross_quad(sim);  // STILL TO CHANGE
+	#endif
 	
 	// integrate torques to get simulated gyro rates (with some damping)
 	sim->rates_bf[0] = maths_clip((1.0f - 0.1f * sim->dt) * sim->rates_bf[0] + sim->dt * sim->torques_bf[0] / sim->vehicle_config.roll_pitch_momentum, 10.0f);

@@ -297,19 +297,26 @@ void stabilisation_birotor_mix_to_servos(control_command_t *control, servos_t* s
 	int32_t i;
 	float motor_command[4];
 
-	motor_command[MOTOR_LEFT]= control->rpy[YAW];//control->thrust  +  control->rpy[YAW];
-	motor_command[MOTOR_RIGHT] =control->rpy[ROLL]; //control->thrust -  control->rpy[ROLL];
-	motor_command[SERVO_LEFT] =  S_L_DIR * control->rpy[PITCH] ;//+ S_L_DIR * control->rpy[ROLL];
-	motor_command[SERVO_RIGHT]  = S_R_DIR * control->rpy[PITCH] ;//- S_R_DIR * control->rpy[ROLL];
+	//motor_command[MOTOR_LEFT]= control->thrust  +  control->rpy[YAW];
+	//motor_command[MOTOR_RIGHT] =control->thrust -  control->rpy[YAW];
+	//motor_command[SERVO_LEFT] =  S_L_DIR * control->rpy[PITCH] + S_L_DIR * control->rpy[ROLL];
+	//motor_command[SERVO_RIGHT]  = S_R_DIR * control->rpy[PITCH] - S_R_DIR * control->rpy[ROLL];
+	
+	motor_command[MOTOR_LEFT]= control->thrust  -  control->rpy[PITCH];
+	motor_command[MOTOR_RIGHT] =control->thrust +  control->rpy[PITCH];
+	motor_command[SERVO_LEFT] =  S_L_DIR * control->rpy[ROLL] + S_L_DIR * control->rpy[YAW];
+	motor_command[SERVO_RIGHT]  = S_R_DIR * control->rpy[ROLL] - S_R_DIR * control->rpy[YAW];
+	
+	
 	for (i=0; i<2; i++)
 	{
-		if (motor_command[i]<MIN_THRUST)
+		if (motor_command[i]<MIN_THRUST_BI)
 		{
-			motor_command[i]=MIN_THRUST;
+			motor_command[i]=MIN_THRUST_BI;
 		}
-		if (motor_command[i]>MAX_THRUST)
+		if (motor_command[i]>MAX_THRUST_BI)
 		{
-			motor_command[i]=MAX_THRUST;
+			motor_command[i]=MAX_THRUST_BI;
 		}
 	}
 		for (i=2; i<4; i++)

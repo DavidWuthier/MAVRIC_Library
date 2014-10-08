@@ -41,9 +41,6 @@
  ******************************************************************************/
 
 
-#ifndef SERVOS_MIX_QUADCOPTER_DIAG_H_
-#define SERVOS_MIX_QUADCOPTER_DIAG_H_
-
 #ifdef __cplusplus
 	extern "C" {
 #endif
@@ -121,4 +118,3 @@ void servos_mix_quadcopter_diag_update(servo_mix_quadcotper_diag_t* mix);
 	}
 #endif
 
-#endif

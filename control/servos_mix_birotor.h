@@ -30,21 +30,19 @@
  ******************************************************************************/
 
 /*******************************************************************************
- * \file servos_mix_quadcopter_cross.h
+ * \file servos_mix_quadcopter_diag.h
  * 
  * \author MAV'RIC Team
  * \author Julien Lecoeur
  *   
  * \brief Links between torque commands and servos PWM command for quadcopters 
- * in cross configuration
+ * in diagonal configuration
  *
  ******************************************************************************/
 
 
 
 
-#ifndef SERVOS_MIX_QUADCOPTER_CROSS_H_
-#define SERVOS_MIX_QUADCOPTER_CROSS_H_
 
 #ifdef __cplusplus
 	extern "C" {
@@ -64,17 +62,20 @@ typedef enum
 
 typedef struct
 {
-	uint8_t 	motor_front;
 	uint8_t 	motor_left;
 	uint8_t 	motor_right;
-	uint8_t		motor_rear;
-	rot_dir_t 	motor_front_dir;
+	uint8_t 	servo_left;
+	uint8_t		servo_right;
 	rot_dir_t 	motor_left_dir;
 	rot_dir_t 	motor_right_dir;
-	rot_dir_t 	motor_rear_dir;
+	rot_dir_t 	servo_left_dir;
+	rot_dir_t 	servo_right_dir;
 	float 		min_thrust;
 	float		max_thrust;
-} servo_mix_quadcopter_cross_conf_t;
+	float 		min_servo;
+	float		max_servo;
+	
+} servo_mix_birotor_conf_t;
 
 
 /**
@@ -82,20 +83,22 @@ typedef struct
  */
 typedef struct 
 {	
-	uint8_t   	motor_front;
-	uint8_t   	motor_left;
-	uint8_t   	motor_right;
-	uint8_t   	motor_rear;
-	rot_dir_t 	motor_front_dir;
+	uint8_t 	motor_left;
+	uint8_t 	motor_right;
+	uint8_t 	servo_left;
+	uint8_t		servo_right;
 	rot_dir_t 	motor_left_dir;
 	rot_dir_t 	motor_right_dir;
-	rot_dir_t 	motor_rear_dir;
+	rot_dir_t 	servo_left_dir;
+	rot_dir_t 	servo_right_dir;
 	float 		min_thrust;
 	float		max_thrust;
+	float 		min_servo;
+	float		max_servo;
 	const torque_command_t* torque_command;
 	const thrust_command_t* thrust_command;
 	servos_t*          		servos;
-} servo_mix_quadcotper_cross_t;
+} servo_mix_birotor_t;
 
 
 /**
@@ -107,7 +110,7 @@ typedef struct
  * @param torque_command [description]
  * @param servo_pwm [description]
  */
-void servo_mix_quadcotper_cross_init(servo_mix_quadcotper_cross_t* mix, const servo_mix_quadcopter_cross_conf_t* config, const torque_command_t* torque_command, const thrust_command_t* thrust_command, servos_t* servos);
+void servo_mix_birotor_init(servo_mix_birotor_t* mix, const servo_mix_birotor_conf_t* config, const torque_command_t* torque_command, const thrust_command_t* thrust_command, servos_t* servos);
 
 
 /**
@@ -116,11 +119,9 @@ void servo_mix_quadcotper_cross_init(servo_mix_quadcotper_cross_t* mix, const se
  * 
  * @param servo_mix [description]
  */
-void servos_mix_quadcopter_cross_update(servo_mix_quadcotper_cross_t* mix);
+void servos_mix_birotor_update(servo_mix_birotor_t* mix);
 
 
 #ifdef __cplusplus
 	}
-#endif
-
 #endif

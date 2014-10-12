@@ -95,8 +95,8 @@ void attitude_controller_p2_update(attitude_controller_p2_t* controller)
 			break;
 
 		case ATTITUDE_COMMAND_MODE_RPY:
-			attitude_error_estimator_set_quat_ref_from_rpy( &controller->attitude_error_estimator,
-															controller->attitude_command->rpy );
+			attitude_error_estimator_set_quat_ref_from_rpy( &controller->attitude_error_estimator, 
+															 controller->attitude_command->rpy );
 			break;
 	}
 

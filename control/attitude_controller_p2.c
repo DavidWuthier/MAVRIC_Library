@@ -81,7 +81,7 @@ void attitude_controller_p2_init(attitude_controller_p2_t* controller, const att
 }
 
 
-void attitude_controller_p2_update(attitude_controller_p2_t* controller)
+void attitude_controller_p2_update(attitude_controller_p2_t* controller, float offset_angles[3])
 {
 	float errors[3];
 	float rates[3];
@@ -99,6 +99,17 @@ void attitude_controller_p2_update(attitude_controller_p2_t* controller)
 															 controller->attitude_command->rpy );
 			break;
 	}
+	quat_t pitch_offset;
+	
+	aero_attitude_t aero_offset;
+	aero_offset.rpy[0] = 0;
+	aero_offset.rpy[1] = offset_angles[1];
+	aero_offset.rpy[2] = 0;
+
+	pitch_offset = coord_conventions_quaternion_from_aero(aero_offset);
+	
+	controller->attitude_error_estimator.quat_ref = quaternions_multiply(controller->attitude_error_estimator.quat_ref,pitch_offset);
+	
 
 	// Get local angular errors
 	attitude_error_estimator_update( &controller->attitude_error_estimator );

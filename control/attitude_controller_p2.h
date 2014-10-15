@@ -107,7 +107,7 @@ void attitude_controller_p2_init(attitude_controller_p2_t* controller, const att
  * 
  * \param 	controller    	Pointer to data structure
  */
-void attitude_controller_p2_update(attitude_controller_p2_t* controller);
+void attitude_controller_p2_update(attitude_controller_p2_t* controller,  float offset_angles[3]);
 
 
 #ifdef __cplusplus

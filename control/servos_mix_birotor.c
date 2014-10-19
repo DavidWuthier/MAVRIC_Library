@@ -44,7 +44,7 @@
 #include "servos_mix_birotor.h"
 
 
-void servo_mix_birotor_init(servo_mix_birotor_t* mix, const servo_mix_birotor_conf_t* config, const torque_command_t* torque_command, const thrust_command_t* thrust_command, servos_t* servos)
+void servo_mix_birotor_init(servo_mix_birotor_t* mix, const servo_mix_birotor_conf_t* config, const torque_command_t* torque_command, const thrust_command_t* thrust_command,  servos_t* servos)
 {
 	// Init dependencies
 	mix->torque_command = torque_command;

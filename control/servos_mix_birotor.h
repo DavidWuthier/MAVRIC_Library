@@ -95,8 +95,8 @@ typedef struct
 	float		max_thrust;
 	float 		min_servo;
 	float		max_servo;
-	const torque_command_t* torque_command;
-	const thrust_command_t* thrust_command;
+	torque_command_t* torque_command;
+	thrust_command_t* thrust_command;
 	servos_t*          		servos;
 } servo_mix_birotor_t;
 

@@ -30,31 +30,68 @@
  ******************************************************************************/
 
 /*******************************************************************************
- * \file stabilisation_hybrid.h
+ * \file stabilisation_birotors.h
  * 
  * \author MAV'RIC Team
  * \author Felix Schill
- * \author Julien Lecoeur
- * \author Yannick Poffet
+ * \author Nicolas Dousse
  *   
- * \brief This file handles the stabilization of the birotors platform
+ * \brief This file handles the stabilization of the platform
  *
  ******************************************************************************/
 
+#ifndef STABILISATION_BIROTOR
+#define STABILISATION_BIROTOR
 
-#ifndef STABILISATION_BIROTORS
-#define STABILISATION_BIROTORS
 
-#include "stabilisation.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-typedef struct {
-	stabiliser_t rate_stabiliser;
-	stabiliser_t attitude_stabiliser;
-} Stabiliser_Stack_hybrid_t;
+#include "position_estimation.h"
+#include "imu.h"
+#include "servos.h"
+#include "mavlink_waypoint_handler.h"
 
-void stabilisation_birotors_init(Stabiliser_Stack_hybrid_t* stabiliser_stack);
+#include "attitude_controller_p2.h"
 
-void stabilisation_birotors_cascade_stabilise_hybrid(imu_t *imu, position_estimator_t *pos_est, control_command_t *control_input);
-void stabilisation_birotors_mix_to_servos(control_command_t *control);
 
-#endif /* STABILISATION_BIROTORS */
+
+/**
+ * \brief							Initialize module stabilization
+ *
+ * \param	stabilisation_copter	The pointer to the stabilisation copter structure
+ * \param	stabiliser_conf			The pointer to structure with all PID controllers
+ * \param	control_input			The pointer to the controlling inputs
+ * \param	imu						The pointer to the IMU structure
+ * \param	ahrs		The pointer to the attitude estimation structure
+ * \param	pos_est					The pointer to the position estimation structure
+ * \param	servos					The pointer to the array of servos command values
+ * \param	mavlink_stream			The pointer to the mavlink stream
+ */
+void stabilisation_birotor_init(attitude_controller_p2_t* stabilisation_birotor, stabilise_birotor_conf_t* stabiliser_conf, control_command_t* controls, const imu_t* imu, const ahrs_t* ahrs, const position_estimator_t* pos_est,servos_t* servos, const mavlink_stream_t* mavlink_stream);
+
+/**
+ * \brief							Main Controller for controlling and stabilizing the quad in position (not using velocity control)
+ *
+ * \param	stabilisation_copter	The stabilisation structure
+ * \param	input					The control command structure
+ * \param	waypoint_handler		The waypoint handler structure, to get hold_position coordinates
+ * \param	position_estimator		The position estimator structure to compute position error
+ */
+void stabilisation_birotor_position_hold(attitude_controller_p2_t* stabilisation_birotor, const control_command_t* input, const mavlink_waypoint_handler_t* waypoint_handler, const position_estimator_t* position_estimator);
+
+/**
+ * \brief							Main Controller for controlling and stabilizing the quad
+ *
+ * \param	stabilisation_copter	The stabilisation structure
+ */
+void stabilisation_birotor_cascade_stabilise(attitude_controller_p2_t* stabilisation_birotor);
+
+
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

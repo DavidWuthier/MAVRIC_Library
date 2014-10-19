@@ -64,7 +64,56 @@ extern "C" {
 #include "attitude_error_estimator.h"
 #include "control_command.h"
 #include "ahrs.h"
+#include "stabilisation.h"
+#include "imu.h"
+#include "position_estimation.h"
+#include "servos.h"
+#include "mavlink_waypoint_handler.h"
 
+ 
+ /*
+ * \brief Structure containing the stacked controller
+ */
+ typedef struct
+ {
+ stabiliser_t rate_stabiliser;								///< The rate controller structure
+ stabiliser_t attitude_stabiliser;							///< The attitude controller structure
+ stabiliser_t velocity_stabiliser;							///< The velocity controller structure
+ stabiliser_t position_stabiliser;							///< The position controller structure
+ float yaw_coordination_velocity;							///< the yaw coordination value in velocity control mode
+ } stabiliser_stack_birotor_t;
+ 
+ /**
+ * \brief P^2 Attitude controller configuration
+ */
+typedef struct
+{
+	float p_gain_angle[3];										///< Proportionnal gain for angular errors
+	float p_gain_rate[3];										///< Proportionnal gain applied to gyros rates
+} attitude_controller_p2_conf_t;	
+
+
+/**
+ * \brief Structure containing the pointers to the data needed in this module
+ */
+typedef struct
+{
+	stabiliser_stack_birotor_t stabiliser_stack;		///< The pointer to the PID parameters values for the stacked controller 
+	control_command_t* controls;					///< The pointer to the control structure
+	const imu_t* imu;								///< The pointer to the IMU structure
+	const ahrs_t* ahrs;								///< The pointer to the attitude estimation structure
+	const position_estimator_t* pos_est;			///< The pointer to the position estimation structure
+	servos_t* servos;								///< The pointer to the servos structure
+} stabilise_birotor_t;
+
+
+/**
+ * \brief Structure containing the configuration data
+ */
+typedef struct  
+{
+	stabiliser_stack_birotor_t stabiliser_stack;					///< The pointer to the PID parameters values and output for the stacked controller
+}stabilise_birotor_conf_t;
 
 /**
  * \brief P^2 Attitude controller structure
@@ -75,20 +124,18 @@ typedef struct
 	const attitude_command_t* 	attitude_command;				///< Pointer to attitude command (input)
 	torque_command_t*			torque_command;					///< Pointer to torque command (output)
 	attitude_error_estimator_t  attitude_error_estimator;		///< Attitude error estimator
-	float 						p_gain_angle[3];				///< Proportionnal gain for angular errors
-	float 						p_gain_rate[3];					///< Proportionnal gain applied to gyros rates
+	float 						p_gain_angle[3];				///< Proportional gain for angular errors
+	float 						p_gain_rate[3];					///< Proportional gain applied to gyros rates
 	// float 						output[3];						///< Output of the controller on the 3 axes
+	control_command_t* controls;					///< The pointer to the control structure
+	stabiliser_stack_birotor_t stabiliser_stack;		///< The pointer to the PID parameters values for the stacked controller
+	const imu_t* imu;								///< The pointer to the IMU structure
+	const position_estimator_t* pos_est;			///< The pointer to the position estimation structure
+	servos_t* servos;								///< The pointer to the servos structure
 } attitude_controller_p2_t;
 
 
-/**
- * \brief P^2 Attitude controller configuration
- */
-typedef struct
-{
-	float p_gain_angle[3];										///< Proportionnal gain for angular errors
-	float p_gain_rate[3];										///< Proportionnal gain applied to gyros rates
-} attitude_controller_p2_conf_t;	
+
 
 
 /**

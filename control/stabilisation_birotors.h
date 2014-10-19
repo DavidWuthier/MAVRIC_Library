@@ -86,7 +86,7 @@ void stabilisation_birotor_position_hold(attitude_controller_p2_t* stabilisation
  *
  * \param	stabilisation_copter	The stabilisation structure
  */
-void stabilisation_birotor_cascade_stabilise(attitude_controller_p2_t* stabilisation_birotor);
+void stabilisation_birotor_cascade_stabilise(attitude_controller_p2_t* stabilisation_birotor , command_t* command );
 
 
 

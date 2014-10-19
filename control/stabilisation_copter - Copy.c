@@ -149,7 +149,7 @@ void stabilisation_copter_cascade_stabilise(stabilise_copter_t* stabilisation_co
 		
 		rpyt_errors[X] = input.tvel[X] - stabilisation_copter->pos_est->vel[X];
 		rpyt_errors[Y] = input.tvel[Y] - stabilisation_copter->pos_est->vel[Y];
-		rpyt_errors[3] = -(input.tvel[Z] - stabilisation_copter->pos_est->vel[Z]);
+		rpyt_errors[Z] = -(input.tvel[Z] - stabilisation_copter->pos_est->vel[Z]);
 		
 		if (stabilisation_copter->controls->yaw_mode == YAW_COORDINATED) 
 		{

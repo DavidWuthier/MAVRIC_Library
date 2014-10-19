@@ -87,8 +87,8 @@ typedef struct
 	rot_dir_t 	motor_rear_left_dir;
 	float 		min_thrust;
 	float		max_thrust;
-	const torque_command_t* torque_command;
-	const thrust_command_t* thrust_command;
+	torque_command_t* torque_command;
+	thrust_command_t* thrust_command;
 	servos_t*          		servos;
 } servo_mix_quadcotper_diag_t;
 

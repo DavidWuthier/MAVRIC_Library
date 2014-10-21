@@ -35,7 +35,7 @@
  * \author MAV'RIC Team
  * \author Julien Lecoeur
  *   
- * \brief This module handles of all incoming mavlink message by calling the 
+ * \brief This module handles of all incoming MAVLink message by calling the 
  * appropriate functions
  *
  ******************************************************************************/
@@ -44,7 +44,6 @@
 #include "mavlink_message_handler.h"
 #include "print_util.h"
 #include "piezo_speaker.h"
-
 #include <stdlib.h>
 #include <stdbool.h>
 
@@ -185,6 +184,7 @@ void mavlink_message_handler_add_msg_callback(	mavlink_message_handler_t* 				me
 	{
 		mavlink_message_handler_msg_callback_t* new_callback = &msg_callback_set->callback_list[msg_callback_set->callback_count];
 
+		new_callback->sys_id		= &(message_handler->mavlink_stream->sysid);
 		new_callback->message_id 	= msg_callback->message_id;
 		new_callback->sysid_filter 	= msg_callback->sysid_filter;
 	 	new_callback->compid_filter = msg_callback->compid_filter;
@@ -282,9 +282,10 @@ void mavlink_message_handler_receive(mavlink_message_handler_t* message_handler,
 		 //print packet command and parameters for debug
 		 print_util_dbg_print("target sysID:");
 		 print_util_dbg_print_num(cmd.target_system,10);
-		 print_util_dbg_print("target compID:");
+		 print_util_dbg_print(", target compID:");
 		 print_util_dbg_print_num(cmd.target_component,10);
-		 print_util_dbg_print("parameters:");
+		 print_util_dbg_print("\r\n");
+		 print_util_dbg_print("parameters: ");
 		 print_util_dbg_print_num(cmd.param1,10);
 		 print_util_dbg_print_num(cmd.param2,10);
 		 print_util_dbg_print_num(cmd.param3,10);
@@ -292,17 +293,20 @@ void mavlink_message_handler_receive(mavlink_message_handler_t* message_handler,
 		 print_util_dbg_print_num(cmd.param5,10);
 		 print_util_dbg_print_num(cmd.param6,10);
 		 print_util_dbg_print_num(cmd.param7,10);
-		 print_util_dbg_print(", command id:");
+		 print_util_dbg_print("\r\n");
+		 print_util_dbg_print("command id:");
 		 print_util_dbg_print_num(cmd.command,10);
 		 print_util_dbg_print(", confirmation:");
 		 print_util_dbg_print_num(cmd.confirmation,10);
-		 print_util_dbg_print("\n");
+		 print_util_dbg_print("\r\n");
 		
 		if (cmd.command >= 0 && cmd.command < MAV_CMD_ENUM_END)
 		{
 			// The command has valid command ID 
-			if(	(cmd.target_system == message_handler->mavlink_stream->sysid)||(cmd.target_system == 255) ) //TODO: modfiy to MAV_SYS_ID_ALL when QGroundControl modified
+			if(	(cmd.target_system == message_handler->mavlink_stream->sysid)||(cmd.target_system == MAV_SYS_ID_ALL) )
 			{
+				mav_result_t result = MAV_RESULT_UNSUPPORTED;
+				
 				// The command is for this system
 				for (uint32_t i = 0; i < message_handler->cmd_callback_set->callback_count; ++i)
 				{
@@ -312,9 +316,18 @@ void mavlink_message_handler_receive(mavlink_message_handler_t* message_handler,
 						handling_module_struct_t 		module_struct 	= message_handler->cmd_callback_set->callback_list[i].module_struct;
 						
 						// Call appropriate function callback
-						function(module_struct, &cmd);
+						result = function(module_struct, &cmd);
+						break;
 					}
 				}
+				// Send acknowledgment message 
+				mavlink_message_t msg;
+				mavlink_msg_command_ack_pack( 	message_handler->mavlink_stream->sysid,
+												message_handler->mavlink_stream->compid,
+												&msg,
+												cmd.command,
+												result);
+				mavlink_stream_send(message_handler->mavlink_stream, &msg);
 			}
 		}
 	}
@@ -327,9 +340,10 @@ void mavlink_message_handler_receive(mavlink_message_handler_t* message_handler,
 			{
 				mavlink_msg_callback_function_t function 		= message_handler->msg_callback_set->callback_list[i].function;
 				handling_module_struct_t 		module_struct 	= message_handler->msg_callback_set->callback_list[i].module_struct;
+				uint32_t						sys_id			= *message_handler->msg_callback_set->callback_list[i].sys_id;
 				
 				// Call appropriate function callback
-				function(module_struct, msg);
+				function(module_struct, sys_id, msg);
 			}
 		}
 	}

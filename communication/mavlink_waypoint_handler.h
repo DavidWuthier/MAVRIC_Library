@@ -35,7 +35,7 @@
  * \author MAV'RIC Team
  * \author Nicolas Dousse
  *  
- * \brief The mavlink waypoint handler
+ * \brief The MAVLink waypoint handler
  *
  ******************************************************************************/
 
@@ -63,7 +63,7 @@ extern "C" {
  */
 
 /**
- * \brief	The mavlink waypoint structure
+ * \brief	The MAVLink waypoint structure
  */
 typedef struct
 {
@@ -94,16 +94,8 @@ typedef struct
 	
 	bool hold_waypoint_set;										///< Flag to tell if the hold position waypoint is set
 
-	bool critical_landing;										///< Flag to execute critical landing (switching motors off)
-	bool critical_next_state;									///< Flag to change critical state in its dedicated state machine
-
-	bool automatic_landing;										///< Flag to initiate the auto landing procedure
-
 	bool waypoint_sending;										///< Flag to tell whether waypoint are being sent
 	bool waypoint_receiving;									///< Flag to tell whether waypoint are being received or not
-	
-	critical_behavior_enum critical_behavior;					///< The critical behavior enum
-	auto_landing_behavior_t auto_landing_behavior;				///< The autolanding behavior enum
 	
 	int32_t sending_waypoint_num;								///< The ID number of the sending waypoint
 	int32_t waypoint_request_number;							///< The ID number of the requested waypoint
@@ -116,8 +108,8 @@ typedef struct
 	position_estimator_t* position_estimator;					///< The pointer to the position estimation structure
 	const ahrs_t* ahrs;											///< The pointer to the attitude estimation structure
 	state_t* state;												///< The pointer to the state structure
-	mavlink_communication_t* mavlink_communication;				///< The pointer to the mavlink communication structure
-	const mavlink_stream_t* mavlink_stream;						///< Pointer to mavlink stream
+	mavlink_communication_t* mavlink_communication;				///< The pointer to the MAVLink communication structure
+	const mavlink_stream_t* mavlink_stream;						///< Pointer to MAVLink stream
 
 }mavlink_waypoint_handler_t;
 
@@ -142,7 +134,7 @@ void waypoint_handler_init_waypoint_list(mavlink_waypoint_handler_t* waypoint_ha
  * \param	position_estimator		The pointer to the position estimator structure
  * \param	ahrs					The pointer to the attitude estimation structure
  * \param	state					The pointer to the state structure
- * \param	mavlink_communication	The pointer to the mavlink communication structure
+ * \param	mavlink_communication	The pointer to the MAVLink communication structure
  */
 void waypoint_handler_init(mavlink_waypoint_handler_t* waypoint_handler, position_estimator_t* position_estimator, const ahrs_t* ahrs, state_t* state, mavlink_communication_t* mavlink_communication, const mavlink_stream_t* mavlink_stream);
 

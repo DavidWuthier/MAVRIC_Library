@@ -56,6 +56,7 @@ extern "C" {
 #include "magnetometer.h"
 #include "quaternions.h"
 #include "scheduler.h"
+#include "state.h"
 
 #define GYRO_LPF 0.1f						///< The gyroscope linear pass filter gain
 #define ACC_LPF 0.05f						///< The accelerometer linear pass filter gain
@@ -70,7 +71,11 @@ typedef struct
 	float bias[3];							///< The biais of the sensor
 	float scale_factor[3];					///< The scale factors of the sensor
 	float orientation[3];					///< The orientation of the sensor
-	uint8_t axis[3];							///< The axis number (X,Y,Z) referring to the sensor datasheet
+	uint8_t axis[3];						///< The axis number (X,Y,Z) referring to the sensor datasheet
+	
+	float max_oriented_values[3];
+	float min_oriented_values[3];
+	bool calibration;
 } sensor_calib_t;
 
 
@@ -98,8 +103,8 @@ typedef struct
 	float dt;								///< The time interval between two IMU updates
 	uint32_t last_update;					///< The time of the last IMU update in ms
 	uint8_t calibration_level;				///< The level of calibration
-	
-	const mavlink_stream_t* mavlink_stream;		///< The pointer to the mavlink stream
+
+	state_t* state;							///< The pointer to the state structure
 } imu_t;
 
 
@@ -107,8 +112,9 @@ typedef struct
  * \brief	Initialize the IMU module
  *
  * \param	imu						The pointer to the IMU structure
+ * \param	state					The pointer to the state structure
  */
-void imu_init (imu_t *imu, const mavlink_stream_t* mavlink_stream);
+void imu_init (imu_t *imu, state_t* state);
 
 
 /**
@@ -125,27 +131,6 @@ void imu_calibrate_gyros(imu_t *imu);
  * \param	imu						The pointer to the IMU structure
  */
 void imu_update(imu_t *imu);
-
-
-/**
- * \brief	Task to send the mavlink scaled IMU message
- * 
- * \param	imu						The pointer to the IMU structure
- *
- * \return	The status of execution of the task
- */
-task_return_t imu_send_scaled(imu_t* imu);
-
-
-/**
- * \brief	Task to send the mavlink raw IMU message
- * 
- * \param	imu						The pointer to the IMU structure
- *
- * \return	The status of execution of the task
- */
-task_return_t imu_send_raw(imu_t* imu);
-
 
 #ifdef __cplusplus
 }

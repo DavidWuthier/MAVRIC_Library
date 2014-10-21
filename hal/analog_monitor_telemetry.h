@@ -30,61 +30,39 @@
  ******************************************************************************/
 
 /*******************************************************************************
- * \file hud.c
+ * \file analog_monitor_telemetry.h
  * 
  * \author MAV'RIC Team
- * \author Gregoire Heitz
+ * \author Nicolas Dousse
  *   
- * \brief This file sends the mavlink HUD message
+ * \brief This module takes care of sending periodic telemetric messages for
+ * the analog monitor module
  *
  ******************************************************************************/
 
+#ifndef ANALOG_MONITOR_TELEMETRY_H_
+#define ANALOG_MONITOR_TELEMETRY_H_
 
-#include "hud.h"
-#include "print_util.h"
-#include "coord_conventions.h"
-#include "mavlink_communication.h"
+#include "mavlink_stream.h"
+#include "analog_monitor.h"
 
-void hud_init(hud_structure_t* hud_structure, const position_estimator_t* pos_est, const control_command_t* controls, const ahrs_t* ahrs, const mavlink_stream_t* mavlink_stream)
-{
-	hud_structure->ahrs = ahrs;
-	hud_structure->controls            = controls;
-	hud_structure->pos_est             = pos_est;
-	hud_structure->mavlink_stream      = mavlink_stream;
-	
-	print_util_dbg_print("HUD structure initialised.\r\n");
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/**
+ * \brief	Sends the analog sonar value
+ * 
+ * \param	analog_monitor	The pointer to the analog monitor structure
+ * \param	mavlink_stream			The pointer to the MAVLink stream structure
+ * \param	msg						The pointer to the MAVLink message
+ */
+void  analog_monitor_telemetry_send_sonar(const analog_monitor_t* analog_monitor, const mavlink_stream_t* mavlink_stream, mavlink_message_t* msg);
+
+
+
+#ifdef __cplusplus
 }
+#endif
 
-task_return_t hud_send_message(hud_structure_t* hud_structure) 
-{
-	float groundspeed = sqrt(hud_structure->pos_est->vel[0] * hud_structure->pos_est->vel[0] + hud_structure->pos_est->vel[1] * hud_structure->pos_est->vel[1]);
-	float airspeed=groundspeed;
-
-	aero_attitude_t aero_attitude;
-	aero_attitude = coord_conventions_quat_to_aero(hud_structure->ahrs->qe);
-	
-	int16_t heading;
-	if(aero_attitude.rpy[2] < 0)
-	{
-		heading = (int16_t)(360.0f + 180.0f * aero_attitude.rpy[2] / PI); //you want to normalize between 0 and 360°
-	}
-	else
-	{
-		heading = (int16_t)(180.0f * aero_attitude.rpy[2] / PI);
-	}
-	
-	
-	mavlink_message_t msg;	
-	mavlink_msg_vfr_hud_pack(	hud_structure->mavlink_stream->sysid, 
-								hud_structure->mavlink_stream->sysid,
-								&msg,
-								airspeed, 
-								groundspeed, 
-								heading, 
-								(int32_t)((hud_structure->controls->thrust + 1.0f) * 50), 
-								-hud_structure->pos_est->local_position.pos[2] + hud_structure->pos_est->local_position.origin.altitude, 
-								-hud_structure->pos_est->vel[2]	);
-	mavlink_stream_send(hud_structure->mavlink_stream, &msg);
-
-	return TASK_RUN_SUCCESS;
-}
+#endif /* ANALOG_MONITOR_TELEMETRY_H_ */

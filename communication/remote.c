@@ -42,6 +42,7 @@
 
 #include "remote.h"
 #include "time_keeper.h"
+#include "print_util.h"
 
 //------------------------------------------------------------------------------
 // PRIVATE FUNCTIONS DECLARATION
@@ -72,6 +73,7 @@ static mode_flag_armed_t get_armed_flag(remote_t* remote)
 		remote_get_roll(remote) > 0.9f )
 	{
 		// Both sticks in bottom right corners => arm
+		print_util_dbg_print("Arming!\r\n");
 		armed = ARMED_ON;
 	}
 	else if ( remote_get_throttle(remote) < -0.95f && 
@@ -80,6 +82,7 @@ static mode_flag_armed_t get_armed_flag(remote_t* remote)
 			remote_get_roll(remote) < -0.9f )
 	{
 		// Both sticks in bottom left corners => disarm 
+		print_util_dbg_print("Disarming!\r\n");
 		armed = ARMED_OFF;
 	}
 	else
@@ -96,10 +99,9 @@ static mode_flag_armed_t get_armed_flag(remote_t* remote)
 //------------------------------------------------------------------------------
 
 
-void remote_init(remote_t* remote, const remote_conf_t* config, const mavlink_stream_t* mavlink_stream, mavlink_message_handler_t *mavlink_handler)
+void remote_init(remote_t* remote, const remote_conf_t* config)
 {
 	// Init dependencies
-	remote->mavlink_stream = mavlink_stream;
 	remote->sat = spektrum_satellite_get_pointer();
 
 	// Init mode from remote
@@ -145,16 +147,6 @@ void remote_init(remote_t* remote, const remote_conf_t* config, const mavlink_st
 		remote->channels[i] = 0.0f;
 		remote->trims[i] = 0.0f;
 	}
-	
-	mavlink_message_handler_cmd_callback_t callbackcmd;
-	
-	callbackcmd.command_id    = MAV_CMD_DO_JUMP;//MAV_CMD_START_RX_PAIR; // 500
-	callbackcmd.sysid_filter  = MAV_SYS_ID_ALL;
-	callbackcmd.compid_filter = MAV_COMP_ID_ALL;
-	callbackcmd.compid_target = MAV_COMP_ID_ALL;
-	callbackcmd.function      = (mavlink_cmd_callback_function_t)	&spektrum_satellite_bind;
-	callbackcmd.module_struct =										remote->sat;
-	mavlink_message_handler_add_cmd_callback(mavlink_handler, &callbackcmd);
 }
 
 
@@ -212,8 +204,10 @@ void remote_update(remote_t* remote)
 }
 
 
-signal_quality_t remote_check(const remote_t* remote)
+signal_quality_t remote_check(remote_t* remote)
 {
+	remote_update(remote);
+	
 	return remote->signal_quality;
 }
 
@@ -407,52 +401,4 @@ void remote_get_velocity_vector_from_remote(remote_t* remote, control_command_t*
 	controls->tvel[Y]= 10.0f * remote_get_roll(remote) * RC_INPUT_SCALE;
 	controls->tvel[Z]= - 1.5f * remote_get_throttle(remote);
 	controls->rpy[YAW] = remote_get_yaw(remote) * RC_INPUT_SCALE;
-}
-
-task_return_t remote_send_raw(const remote_t* remote)
-{
-	mavlink_message_t msg;
-	mavlink_msg_rc_channels_raw_pack(	remote->mavlink_stream->sysid,
-										remote->mavlink_stream->compid,
-										&msg,
-										time_keeper_get_millis(),
-										0,
-										remote->sat->channels[0] + 1024,
-										remote->sat->channels[1] + 1024,
-										remote->sat->channels[2] + 1024,
-										remote->sat->channels[3] + 1024,
-										remote->sat->channels[4] + 1024,
-										remote->sat->channels[5] + 1024,
-										remote->sat->channels[6] + 1024,
-										remote->sat->channels[7] + 1024,
-										// remote->mode.current_desired_mode.byte);
-										remote->signal_quality	);
-	
-	mavlink_stream_send(remote->mavlink_stream, &msg);
-	
-	return TASK_RUN_SUCCESS;
-}
-
-task_return_t remote_send_scaled(const remote_t* remote)
-{
-	mavlink_message_t msg;
-	mavlink_msg_rc_channels_scaled_pack(	remote->mavlink_stream->sysid,
-											remote->mavlink_stream->compid,
-											&msg,
-											time_keeper_get_millis(),
-											0,
-											remote->channels[0] * 10000.0f,
-											remote->channels[1] * 10000.0f,
-											remote->channels[2] * 10000.0f,
-											remote->channels[3] * 10000.0f,
-											remote->channels[4] * 10000.0f,
-											remote->channels[5] * 10000.0f,
-											remote->channels[6] * 10000.0f,
-											remote->channels[7] * 10000.0f,
-											remote->mode.current_desired_mode.byte );
-											// remote->signal_quality	);
-	
-	mavlink_stream_send(remote->mavlink_stream, &msg);
-	
-	return TASK_RUN_SUCCESS;	
 }

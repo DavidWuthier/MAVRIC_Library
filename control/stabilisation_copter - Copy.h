@@ -72,12 +72,13 @@ typedef struct
  */
 typedef struct
 {
-	stabiliser_stack_copter_t stabiliser_stack;		///< The pointer to the PID parameters values for the stacked controller 
-	control_command_t* controls;					///< The pointer to the control structure
-	const imu_t* imu;								///< The pointer to the IMU structure
-	const ahrs_t* ahrs;								///< The pointer to the attitude estimation structure
-	const position_estimator_t* pos_est;			///< The pointer to the position estimation structure
-	servos_t* servos;								///< The pointer to the servos structure
+	float thrust_hover_point;									///< The hover point of the thrust
+	stabiliser_stack_copter_t stabiliser_stack;					///< The pointer to the PID parameters values for the stacked controller 
+	control_command_t* controls;								///< The pointer to the control structure
+	const imu_t* imu;											///< The pointer to the IMU structure
+	const ahrs_t* ahrs;											///< The pointer to the attitude estimation structure
+	const position_estimator_t* pos_est;						///< The pointer to the position estimation structure
+	servos_t* servos;											///< The pointer to the servos structure
 } stabilise_copter_t;
 
 /**
@@ -95,12 +96,11 @@ typedef struct
  * \param	stabiliser_conf			The pointer to structure with all PID controllers
  * \param	control_input			The pointer to the controlling inputs
  * \param	imu						The pointer to the IMU structure
- * \param	ahrs		The pointer to the attitude estimation structure
+ * \param	ahrs					The pointer to the attitude estimation structure
  * \param	pos_est					The pointer to the position estimation structure
  * \param	servos					The pointer to the array of servos command values
- * \param	mavlink_stream			The pointer to the mavlink stream
  */
-void stabilisation_copter_init(stabilise_copter_t* stabilisation_copter, stabilise_copter_conf_t* stabiliser_conf, control_command_t* controls, const imu_t* imu, const ahrs_t* ahrs, const position_estimator_t* pos_est,servos_t* servos, const mavlink_stream_t* mavlink_stream);
+void stabilisation_copter_init(stabilise_copter_t* stabilisation_copter, stabilise_copter_conf_t* stabiliser_conf, control_command_t* controls, const imu_t* imu, const ahrs_t* ahrs, const position_estimator_t* pos_est,servos_t* servos);
 
 /**
  * \brief							Main Controller for controlling and stabilizing the quad in position (not using velocity control)

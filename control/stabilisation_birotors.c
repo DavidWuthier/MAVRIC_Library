@@ -190,9 +190,13 @@ void stabilisation_birotor_cascade_stabilise(attitude_controller_p2_t* stabilisa
 	// -- no break here  - we want to run the lower level modes as well! -- 
 	
 	case ATTITUDE_COMMAND_MODE:
-		stabilisation_birotor->attitude_command->rpy[ROLL] = input.rpy[ROLL];
-		stabilisation_birotor->attitude_command->rpy[PITCH] = input.rpy[PITCH];
-		stabilisation_birotor->attitude_command->rpy[YAW] = input.rpy[YAW]; 
+		command->attitude.rpy[0] = input.rpy[ROLL];
+		command->attitude.rpy[1] = input.rpy[PITCH];
+		command->attitude.rpy[2] = input.rpy[YAW];
+	
+		//stabilisation_birotor->attitude_command->rpy[ROLL] = input.rpy[ROLL];
+		//stabilisation_birotor->attitude_command->rpy[PITCH] = input.rpy[PITCH];
+		//stabilisation_birotor->attitude_command->rpy[YAW] = input.rpy[YAW]; 
 		
 		// PART OF THE QUATERNION CONTROLLER
 		// Get attitude command
@@ -205,7 +209,7 @@ void stabilisation_birotor_cascade_stabilise(attitude_controller_p2_t* stabilisa
 
 			case ATTITUDE_COMMAND_MODE_RPY:
 			attitude_error_estimator_set_quat_ref_from_rpy( &stabilisation_birotor->attitude_error_estimator,
-			stabilisation_birotor->attitude_command->rpy );
+															stabilisation_birotor->attitude_command->rpy );
 			break;
 		}
 		quat_t pitch_offset;
@@ -218,10 +222,16 @@ void stabilisation_birotor_cascade_stabilise(attitude_controller_p2_t* stabilisa
 		pitch_offset = coord_conventions_quaternion_from_aero(aero_offset);
 		
 		stabilisation_birotor->attitude_error_estimator.quat_ref = quaternions_multiply(stabilisation_birotor->attitude_error_estimator.quat_ref,pitch_offset);
+		
+		attitude_error_estimator_update( &stabilisation_birotor->attitude_error_estimator );
 		// END OF THE PART OF THE QUATERNION CONTROLLER
 		rpyt_errors[0] = stabilisation_birotor->attitude_error_estimator.rpy_errors[0];
 		rpyt_errors[1] = stabilisation_birotor->attitude_error_estimator.rpy_errors[1];
 		rpyt_errors[2] = stabilisation_birotor->attitude_error_estimator.rpy_errors[2];
+		
+		/*rpyt_errors[0] = input.rpy[ROLL];
+		rpyt_errors[1] = input.rpy[PITCH];
+		rpyt_errors[2] = input.rpy[YAW];*/
 		
 		rpyt_errors[3]= input.thrust;       // no feedback for thrust at this level
 		
@@ -246,14 +256,11 @@ void stabilisation_birotor_cascade_stabilise(attitude_controller_p2_t* stabilisa
 	}
 	
 	// mix to servo outputs depending on configuration
-	stabilisation_birotor->torque_command->xyz[0] = stabilisation_birotor->stabiliser_stack.rate_stabiliser.output.rpy[0];
-	stabilisation_birotor->torque_command->xyz[1] = stabilisation_birotor->stabiliser_stack.rate_stabiliser.output.rpy[1];
-	stabilisation_birotor->torque_command->xyz[2] = stabilisation_birotor->stabiliser_stack.rate_stabiliser.output.rpy[2];
-	
 
-	command->attitude.rpy[0] 	= stabilisation_birotor->stabiliser_stack.rate_stabiliser.output.rpy[0];
-	command->attitude.rpy[1] 	= stabilisation_birotor->stabiliser_stack.rate_stabiliser.output.rpy[0];
-	command->attitude.rpy[2] 	= stabilisation_birotor->stabiliser_stack.rate_stabiliser.output.rpy[0];
+
+	command->torque.xyz[0] 	= stabilisation_birotor->stabiliser_stack.rate_stabiliser.output.rpy[0];
+	command->torque.xyz[1] 	= stabilisation_birotor->stabiliser_stack.rate_stabiliser.output.rpy[1];
+	command->torque.xyz[2] 	= stabilisation_birotor->stabiliser_stack.rate_stabiliser.output.rpy[2];
 
 	command->thrust.thrust 	= stabilisation_birotor->stabiliser_stack.rate_stabiliser.output.thrust;
 	

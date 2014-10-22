@@ -272,16 +272,10 @@ void stabilisation_birotor_cascade_stabilise(attitude_controller_p2_t* stabilisa
 	
 	// mix to servo outputs depending on configuration
 
-<<<<<<< HEAD
 
 	command->torque.xyz[0] 	= stabilisation_birotor->stabiliser_stack.rate_stabiliser.output.rpy[0];
 	command->torque.xyz[1] 	= stabilisation_birotor->stabiliser_stack.rate_stabiliser.output.rpy[1];
 	command->torque.xyz[2] 	= stabilisation_birotor->stabiliser_stack.rate_stabiliser.output.rpy[2];
-=======
-	command->torque.xyz[0] 	= stabilisation_birotor->stabiliser_stack.rate_stabiliser.output.rpy[0];
-	command->torque.xyz[1]  	= stabilisation_birotor->stabiliser_stack.rate_stabiliser.output.rpy[1];
-	command->torque.xyz[2]  	= stabilisation_birotor->stabiliser_stack.rate_stabiliser.output.rpy[2];
->>>>>>> 511bd85dc11f863ce9de3ab6826805c0285d1f8e
 
 	command->thrust.thrust  	= stabilisation_birotor->stabiliser_stack.rate_stabiliser.output.thrust;
 	

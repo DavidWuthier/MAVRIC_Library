@@ -43,7 +43,7 @@
 #include "stabilisation_birotors.h"
 #include "print_util.h"
 
-void stabilisation_birotor_init(attitude_controller_p2_t* stabilisation_birotor, stabilise_birotor_conf_t* stabiliser_conf, control_command_t* controls, const imu_t* imu, const ahrs_t* ahrs, const position_estimator_t* pos_est,servos_t* servos, const mavlink_stream_t* mavlink_stream)
+void stabilisation_birotor_init(attitude_controller_p2_t* stabilisation_birotor, stabilise_birotor_conf_t* stabiliser_conf, control_command_t* controls, const imu_t* imu, const ahrs_t* ahrs, const position_estimator_t* pos_est,servos_t* servos/*, const mavlink_stream_t* mavlink_stream*/)
 {
 	
 	stabilisation_birotor->stabiliser_stack = stabiliser_conf->stabiliser_stack;
@@ -65,10 +65,10 @@ void stabilisation_birotor_init(attitude_controller_p2_t* stabilisation_birotor,
 	controls->theading = 0.0f;
 	controls->thrust = -1.0f;
 
-	stabilisation_birotor->stabiliser_stack.rate_stabiliser.mavlink_stream = mavlink_stream;
-	stabilisation_birotor->stabiliser_stack.attitude_stabiliser.mavlink_stream = mavlink_stream;
-	stabilisation_birotor->stabiliser_stack.velocity_stabiliser.mavlink_stream = mavlink_stream;
-	stabilisation_birotor->stabiliser_stack.position_stabiliser.mavlink_stream = mavlink_stream;
+	//stabilisation_birotor->stabiliser_stack.rate_stabiliser.mavlink_stream = mavlink_stream;
+	//stabilisation_birotor->stabiliser_stack.attitude_stabiliser.mavlink_stream = mavlink_stream;
+	//stabilisation_birotor->stabiliser_stack.velocity_stabiliser.mavlink_stream = mavlink_stream;
+	//stabilisation_birotor->stabiliser_stack.position_stabiliser.mavlink_stream = mavlink_stream;
 	
 	
 	print_util_dbg_print("Stabilisation copter init.\r\n");

@@ -43,7 +43,7 @@
 #include "stabilisation_birotors.h"
 #include "print_util.h"
 
-void stabilisation_birotor_init(attitude_controller_p2_t* stabilisation_birotor, stabilise_birotor_conf_t* stabiliser_conf, control_command_t* controls, const imu_t* imu, const ahrs_t* ahrs, const position_estimator_t* pos_est,servos_t* servos, const mavlink_stream_t* mavlink_stream)
+void stabilisation_birotor_init(attitude_controller_p2_t* stabilisation_birotor, stabilise_birotor_conf_t* stabiliser_conf, control_command_t* controls, const imu_t* imu, const ahrs_t* ahrs, const position_estimator_t* pos_est,servos_t* servos/*, const mavlink_stream_t* mavlink_stream*/)
 {
 	
 	stabilisation_birotor->stabiliser_stack = stabiliser_conf->stabiliser_stack;
@@ -65,10 +65,10 @@ void stabilisation_birotor_init(attitude_controller_p2_t* stabilisation_birotor,
 	controls->theading = 0.0f;
 	controls->thrust = -1.0f;
 
-	stabilisation_birotor->stabiliser_stack.rate_stabiliser.mavlink_stream = mavlink_stream;
-	stabilisation_birotor->stabiliser_stack.attitude_stabiliser.mavlink_stream = mavlink_stream;
-	stabilisation_birotor->stabiliser_stack.velocity_stabiliser.mavlink_stream = mavlink_stream;
-	stabilisation_birotor->stabiliser_stack.position_stabiliser.mavlink_stream = mavlink_stream;
+	//stabilisation_birotor->stabiliser_stack.rate_stabiliser.mavlink_stream = mavlink_stream;
+	//stabilisation_birotor->stabiliser_stack.attitude_stabiliser.mavlink_stream = mavlink_stream;
+	//stabilisation_birotor->stabiliser_stack.velocity_stabiliser.mavlink_stream = mavlink_stream;
+	//stabilisation_birotor->stabiliser_stack.position_stabiliser.mavlink_stream = mavlink_stream;
 	
 	
 	print_util_dbg_print("Stabilisation copter init.\r\n");
@@ -141,6 +141,8 @@ void stabilisation_birotor_cascade_stabilise(attitude_controller_p2_t* stabilisa
 		q_rot = coord_conventions_quaternion_from_aero(attitude_yaw_inverse);
 		
 		quat_t input_global;
+		// input.tvel comes from the remote if it is in velocity command from remote.
+		// But it comes from the navigation in case of waypoint
 		quaternions_rotate_vector(q_rot, input.tvel, input_global.v);
 		
 		input.tvel[X] = input_global.v[X];
@@ -149,7 +151,7 @@ void stabilisation_birotor_cascade_stabilise(attitude_controller_p2_t* stabilisa
 		
 		rpyt_errors[X] = input.tvel[X] - stabilisation_birotor->pos_est->vel[X];
 		rpyt_errors[Y] = input.tvel[Y] - stabilisation_birotor->pos_est->vel[Y];
-		rpyt_errors[3] = -(input.tvel[Z] - stabilisation_birotor->pos_est->vel[Z]);
+		rpyt_errors[Z] = -(input.tvel[Z] - stabilisation_birotor->pos_est->vel[Z]);
 		
 		if (stabilisation_birotor->controls->yaw_mode == YAW_COORDINATED) 
 		{
@@ -190,13 +192,11 @@ void stabilisation_birotor_cascade_stabilise(attitude_controller_p2_t* stabilisa
 	// -- no break here  - we want to run the lower level modes as well! -- 
 	
 	case ATTITUDE_COMMAND_MODE:
-		command->attitude.rpy[0] = input.rpy[ROLL];
-		command->attitude.rpy[1] = input.rpy[PITCH];
-		command->attitude.rpy[2] = input.rpy[YAW];
-	
-		//stabilisation_birotor->attitude_command->rpy[ROLL] = input.rpy[ROLL];
-		//stabilisation_birotor->attitude_command->rpy[PITCH] = input.rpy[PITCH];
-		//stabilisation_birotor->attitude_command->rpy[YAW] = input.rpy[YAW]; 
+
+		command->attitude.rpy[ROLL] = input.rpy[ROLL];
+		command->attitude.rpy[PITCH] = input.rpy[PITCH];
+		command->attitude.rpy[YAW] = input.rpy[YAW]; 
+
 		
 		// PART OF THE QUATERNION CONTROLLER
 		// Get attitude command
@@ -225,6 +225,7 @@ void stabilisation_birotor_cascade_stabilise(attitude_controller_p2_t* stabilisa
 		
 		attitude_error_estimator_update( &stabilisation_birotor->attitude_error_estimator );
 		// END OF THE PART OF THE QUATERNION CONTROLLER
+		attitude_error_estimator_update( &stabilisation_birotor->attitude_error_estimator );
 		rpyt_errors[0] = stabilisation_birotor->attitude_error_estimator.rpy_errors[0];
 		rpyt_errors[1] = stabilisation_birotor->attitude_error_estimator.rpy_errors[1];
 		rpyt_errors[2] = stabilisation_birotor->attitude_error_estimator.rpy_errors[2];
@@ -257,12 +258,18 @@ void stabilisation_birotor_cascade_stabilise(attitude_controller_p2_t* stabilisa
 	
 	// mix to servo outputs depending on configuration
 
+<<<<<<< HEAD
 
 	command->torque.xyz[0] 	= stabilisation_birotor->stabiliser_stack.rate_stabiliser.output.rpy[0];
 	command->torque.xyz[1] 	= stabilisation_birotor->stabiliser_stack.rate_stabiliser.output.rpy[1];
 	command->torque.xyz[2] 	= stabilisation_birotor->stabiliser_stack.rate_stabiliser.output.rpy[2];
+=======
+	command->torque.xyz[0] 	= stabilisation_birotor->stabiliser_stack.rate_stabiliser.output.rpy[0];
+	command->torque.xyz[1]  	= stabilisation_birotor->stabiliser_stack.rate_stabiliser.output.rpy[1];
+	command->torque.xyz[2]  	= stabilisation_birotor->stabiliser_stack.rate_stabiliser.output.rpy[2];
+>>>>>>> 511bd85dc11f863ce9de3ab6826805c0285d1f8e
 
-	command->thrust.thrust 	= stabilisation_birotor->stabiliser_stack.rate_stabiliser.output.thrust;
+	command->thrust.thrust  	= stabilisation_birotor->stabiliser_stack.rate_stabiliser.output.thrust;
 	
 }
 

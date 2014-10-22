@@ -127,6 +127,7 @@ typedef struct
 	attitude_error_estimator_t  attitude_error_estimator;		///< Attitude error estimator
 	float 						p_gain_angle[3];				///< Proportional gain for angular errors
 	float 						p_gain_rate[3];					///< Proportional gain applied to gyros rates
+	float						stab_angle[3];
 	// float 						output[3];						///< Output of the controller on the 3 axes
 	control_command_t* controls;					///< The pointer to the control structure
 	stabiliser_stack_birotor_t stabiliser_stack;		///< The pointer to the PID parameters values for the stacked controller

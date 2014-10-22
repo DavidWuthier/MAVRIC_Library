@@ -213,13 +213,28 @@ void stabilisation_birotor_cascade_stabilise(attitude_controller_p2_t* stabilisa
 		quat_t pitch_offset;
 		
 		aero_attitude_t aero_offset;
-		aero_offset.rpy[0] = 0;
-		aero_offset.rpy[1] = PI/2;//offset_angles[1];
+		aero_offset.rpy[0] = stabilisation_birotor->stab_angle[0];
+		aero_offset.rpy[1] = stabilisation_birotor->stab_angle[1];
 		aero_offset.rpy[2] = 0;
-
+		
 		pitch_offset = coord_conventions_quaternion_from_aero(aero_offset);
 		
-		stabilisation_birotor->attitude_error_estimator.quat_ref = quaternions_multiply(stabilisation_birotor->attitude_error_estimator.quat_ref,pitch_offset);
+	
+	
+		quat_t yaw_offset;
+				
+		aero_attitude_t aero_offset_yaw;
+		aero_offset_yaw.rpy[0] = stabilisation_birotor->stab_angle[2];
+		aero_offset_yaw.rpy[1] = 0;
+		aero_offset_yaw.rpy[2] = 0;
+
+		yaw_offset = coord_conventions_quaternion_from_aero(aero_offset_yaw);
+		
+		quat_t tot = quaternions_multiply(yaw_offset,pitch_offset);
+		
+		
+		stabilisation_birotor->attitude_error_estimator.quat_ref = quaternions_multiply(stabilisation_birotor->attitude_error_estimator.quat_ref, tot);
+		
 		// END OF THE PART OF THE QUATERNION CONTROLLER
 		attitude_error_estimator_update( &stabilisation_birotor->attitude_error_estimator );
 		rpyt_errors[0] = stabilisation_birotor->attitude_error_estimator.rpy_errors[0];

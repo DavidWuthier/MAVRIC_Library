@@ -232,6 +232,7 @@ void stabilisation_birotor_cascade_stabilise(attitude_controller_p2_t* stabilisa
 		
 		quat_t tot = quaternions_multiply(yaw_offset,pitch_offset);
 		
+		
 		stabilisation_birotor->attitude_error_estimator.quat_ref = quaternions_multiply(stabilisation_birotor->attitude_error_estimator.quat_ref, tot);
 		
 		// END OF THE PART OF THE QUATERNION CONTROLLER

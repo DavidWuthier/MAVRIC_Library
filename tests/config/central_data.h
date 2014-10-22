@@ -20,10 +20,10 @@
 #include "imu.h"
 
 // #include "stabilisation.h"
-#include "stabilisation_copter.h"
+#include "stabilisation_birotors.h"
 // #include "stabilisation_hybrid.h"
 
-#include "remote_controller.h"
+#include "remote.h"
 #include "pid_control.h"
 #include "streams.h"
 //#include "uart_int.h"
@@ -33,7 +33,7 @@
 #include "mavlink_stream.h"
 #include "coord_conventions.h"
 #include "onboard_parameters.h"
-#include "servo_pwm.h"
+#include "pwm_servos.h"
 
 #include "gps_ublox.h"
 #include "mavlink_waypoint_handler.h"

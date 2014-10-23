@@ -175,9 +175,13 @@ void stabilisation_birotor_cascade_stabilise(attitude_controller_p2_t* stabilisa
 		stabilisation_run(&stabilisation_birotor->stabiliser_stack.velocity_stabiliser, stabilisation_birotor->imu->dt, rpyt_errors);
 		
 		//velocity_stabiliser.output.thrust = maths_f_min(velocity_stabiliser.output.thrust,stabilisation_param.controls->thrust);
-		stabilisation_birotor->stabiliser_stack.velocity_stabiliser.output.thrust += THRUST_HOVER_POINT;
+		
+	
+		//stabilisation_birotor->stabiliser_stack.velocity_stabiliser.output.thrust += THRUST_HOVER_POINT; // UNCOMMENT THIS WHEN OVER WITH MANUAL THRUST
 		stabilisation_birotor->stabiliser_stack.velocity_stabiliser.output.theading = input.theading;
+		float command_remote_thrust = input.thrust;//REMOVE THIS WHEN OVER WITH MANUAL THRUST
 		input = stabilisation_birotor->stabiliser_stack.velocity_stabiliser.output;
+		input.thrust = command_remote_thrust;//REMOVE THIS WHEN OVER WITH MANUAL THRUST
 		
 		qtmp=quaternions_create_from_vector(stabilisation_birotor->stabiliser_stack.velocity_stabiliser.output.rpy);
 		//quat_t rpy_local = quaternions_global_to_local(stabilisation_birotor->ahrs->qe, qtmp);

@@ -46,6 +46,7 @@
 
 #include "mavlink_stream.h"
 #include "scheduler.h"
+#include "attitude_controller_p2.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -60,6 +61,8 @@ extern "C" {
  * \param	msg						The pointer to the MAVLink message
  */
 void scheduler_telemetry_send_rt_stats(const scheduler_t* scheduler, const mavlink_stream_t* mavlink_stream, mavlink_message_t* msg);
+
+void scheduler_telemetry_send_test_values(const stabiliser_stack_birotor_t* stabiliser_stack, const mavlink_stream_t* mavlink_stream, mavlink_message_t* msg);
 
 
 #ifdef __cplusplus

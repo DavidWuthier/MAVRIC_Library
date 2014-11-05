@@ -387,9 +387,9 @@ void remote_get_command_from_remote(remote_t* remote, control_command_t* control
 {
 	remote_update(remote);
 	
-	controls->rpy[ROLL]= remote_get_roll(remote) * RC_INPUT_SCALE * 0.1f;
-	controls->rpy[PITCH]= remote_get_pitch(remote) * RC_INPUT_SCALE * 0.1f;
-	controls->rpy[YAW]= remote_get_yaw(remote) * RC_INPUT_SCALE * 0.1f;
+	controls->rpy[ROLL]= remote_get_roll(remote) * RC_INPUT_SCALE * 0.2f;
+	controls->rpy[PITCH]= remote_get_pitch(remote) * RC_INPUT_SCALE * 0.2f;
+	controls->rpy[YAW]= remote_get_yaw(remote) * RC_INPUT_SCALE * 0.5f;
 	controls->thrust = remote_get_throttle(remote);
 }
 

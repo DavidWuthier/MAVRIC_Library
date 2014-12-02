@@ -117,7 +117,7 @@ void stabilisation_birotor_position_hold(attitude_controller_p2_t* stabilisation
 	stabilisation_birotor->controls->control_mode = ATTITUDE_COMMAND_MODE;//VELOCITY_COMMAND_MODE;
 }
 
-void stabilisation_birotor_cascade_stabilise(attitude_controller_p2_t* stabilisation_birotor , command_t* command )
+void stabilisation_birotor_cascade_stabilise(attitude_controller_p2_t* stabilisation_birotor , command_t* command ) // adaptation to transitioning
 {
 	float rpyt_errors[4];
 	control_command_t input;

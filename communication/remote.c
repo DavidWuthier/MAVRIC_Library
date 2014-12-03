@@ -383,6 +383,16 @@ mav_mode_t remote_mode_get(const remote_t* remote)
 	return remote->mode.current_desired_mode;
 }
 
+void remote_get_signal_from_remote(remote_t* remote, control_command_t* controls)
+{
+	remote_update(remote);
+	
+	controls->rpy[ROLL]= remote_get_roll(remote) * RC_INPUT_SCALE;
+	controls->rpy[PITCH]= remote_get_pitch(remote) * RC_INPUT_SCALE;
+	controls->rpy[YAW]= remote_get_yaw(remote) * RC_INPUT_SCALE;
+	controls->thrust = remote_get_throttle(remote);
+}
+
 void remote_get_command_from_remote(remote_t* remote, control_command_t* controls)
 {
 	remote_update(remote);

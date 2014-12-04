@@ -71,6 +71,12 @@ typedef enum
 	YAW_COORDINATED
 } yaw_mode_t;
 
+typedef struct
+{
+	float sensitivity_rpy[3];
+	float trim_rpy[3];
+} model_settings_t;
+
 /**
  * \brief	The control command typedef
  */
@@ -82,6 +88,8 @@ typedef struct
 	float theading;								///< absolute target heading	
 	control_mode_t control_mode;				///< control mode
 	yaw_mode_t     yaw_mode;					///< yaw mode
+	model_settings_t manual;
+	model_settings_t stabilized;
 } control_command_t;
 
 /**

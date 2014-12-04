@@ -277,7 +277,6 @@ void remote_get_command_from_remote(remote_t* remote, control_command_t * contro
  */
 void remote_get_velocity_vector_from_remote(remote_t* remote, control_command_t* controls);
 
-
 #ifdef __cplusplus
 	}
 #endif

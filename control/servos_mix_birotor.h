@@ -77,7 +77,6 @@ typedef struct
 	
 } servo_mix_birotor_conf_t;
 
-
 /**
  * \brief	servos mix structure
  */
@@ -99,7 +98,6 @@ typedef struct
 	thrust_command_t* thrust_command;
 	servos_t*          		servos;
 } servo_mix_birotor_t;
-
 
 /**
  * @brief [brief description]

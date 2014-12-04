@@ -64,11 +64,19 @@ void stabilisation_birotor_init(attitude_controller_p2_t* stabilisation_birotor,
 	controls->tvel[Z] = 0.0f;
 	controls->theading = 0.0f;
 	controls->thrust = -1.0f;
-
-	//stabilisation_birotor->stabiliser_stack.rate_stabiliser.mavlink_stream = mavlink_stream;
-	//stabilisation_birotor->stabiliser_stack.attitude_stabiliser.mavlink_stream = mavlink_stream;
-	//stabilisation_birotor->stabiliser_stack.velocity_stabiliser.mavlink_stream = mavlink_stream;
-	//stabilisation_birotor->stabiliser_stack.position_stabiliser.mavlink_stream = mavlink_stream;
+	
+	controls->manual.sensitivity_rpy[ROLL] = 1.0f;
+	controls->manual.sensitivity_rpy[PITCH] = 1.0f;
+	controls->manual.sensitivity_rpy[YAW] = 1.0f;
+	controls->manual.trim_rpy[ROLL] = 0.0f;
+	controls->manual.trim_rpy[PITCH] = 0.0f;
+	controls->manual.trim_rpy[YAW] = 0.0f;
+	controls->stabilized.sensitivity_rpy[ROLL] = 0.2f;
+	controls->stabilized.sensitivity_rpy[PITCH] = 0.2f;
+	controls->stabilized.sensitivity_rpy[YAW] = 0.5f;
+	controls->stabilized.trim_rpy[ROLL] = 0.0f;
+	controls->stabilized.trim_rpy[PITCH] = 0.0f;
+	controls->stabilized.trim_rpy[YAW] = 0.0f;
 	
 	
 	print_util_dbg_print("Stabilisation copter init.\r\n");

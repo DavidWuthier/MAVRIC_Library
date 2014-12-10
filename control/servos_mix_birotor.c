@@ -97,7 +97,7 @@ void servos_mix_birotor_update(servo_mix_birotor_t* mix)
 				
 	
 	// Clip values
-	/*for (i=0; i<2; i++)
+	for (i=0; i<2; i++)
 	{
 		if ( motor[i] < mix->min_thrust )
 		{
@@ -121,7 +121,7 @@ void servos_mix_birotor_update(servo_mix_birotor_t* mix)
 		}
 	}
 	
-	servos_set_value(mix->servos, mix->motor_left	,	motor[0]);
+	/*servos_set_value(mix->servos, mix->motor_left	,	motor[0]);
 	servos_set_value(mix->servos, mix->motor_right 	,	motor[1]);
 	servos_set_value(mix->servos, mix->servo_left	,	motor[2]);
 	servos_set_value(mix->servos, mix->servo_right	,   motor[3]);*/

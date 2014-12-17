@@ -227,9 +227,9 @@ void stabilisation_birotor_cascade_stabilise(attitude_controller_p2_t* stabilisa
 		quat_t pitch_offset;
 		
 		aero_attitude_t aero_offset;
-		aero_offset.rpy[0] = stabilisation_birotor->stab_angle[0];
+		aero_offset.rpy[0] = 0.0f;
 		aero_offset.rpy[1] = stabilisation_birotor->stab_angle[1];
-		aero_offset.rpy[2] = 0;
+		aero_offset.rpy[2] = 0.0f;
 		
 		pitch_offset = coord_conventions_quaternion_from_aero(aero_offset);
 		

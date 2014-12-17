@@ -267,6 +267,9 @@ void stabilisation_birotor_cascade_stabilise(attitude_controller_p2_t* stabilisa
 		
 		// use output of attitude_filter controller to set rate setpoints for rate controller 
 		input = stabilisation_birotor->stabiliser_stack.attitude_stabiliser.output;
+		
+		// use YAW_RELATIVE mode
+		input.rpy[YAW] = stabilisation_birotor->controls->rpy[YAW];
 	
 	// -- no break here  - we want to run the lower level modes as well! -- 
 	

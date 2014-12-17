@@ -90,6 +90,7 @@ typedef struct
 	yaw_mode_t     yaw_mode;					///< yaw mode
 	model_settings_t manual;
 	model_settings_t stabilized;
+	float pitch_offset;
 } control_command_t;
 
 /**

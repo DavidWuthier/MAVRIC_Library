@@ -241,6 +241,11 @@ float remote_get_yaw(const remote_t* remote)
 	return remote->channels[CHANNEL_YAW];
 }
 
+float remote_get_pitch_offset(const remote_t* remote)
+{
+	return remote->channels[CHANNEL_AUX1];
+}
+
 
 void remote_mode_init(remote_mode_t* remote_mode, const remote_mode_conf_t* config)
 {
@@ -411,4 +416,11 @@ void remote_get_velocity_vector_from_remote(remote_t* remote, control_command_t*
 	controls->tvel[Y]= 10.0f * remote_get_roll(remote) * RC_INPUT_SCALE;
 	controls->tvel[Z]= - 1.5f * remote_get_throttle(remote);
 	controls->rpy[YAW] = remote_get_yaw(remote) * RC_INPUT_SCALE;
+}
+
+void remote_get_pitch_offset_from_remote(remote_t* remote, control_command_t* controls, float initial_pitch_offset)
+{
+	remote_update(remote);
+
+	controls->pitch_offset = initial_pitch_offset/2.0f*(1.0f - remote_get_pitch_offset(remote));
 }

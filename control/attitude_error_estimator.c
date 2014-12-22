@@ -69,6 +69,12 @@ void attitude_error_estimator_init(attitude_error_estimator_t* estimator, const 
 	estimator->rpy_errors[0] = 0;
 	estimator->rpy_errors[1] = 0;
 	estimator->rpy_errors[2] = 0;
+	
+	// Init qe_without_offset
+	estimator->qe_without_offset.s = 1;
+	estimator->qe_without_offset.v[0] = 0;
+	estimator->qe_without_offset.v[1] = 0;
+	estimator->qe_without_offset.v[2] = 0;
 }
 
 

@@ -70,6 +70,7 @@ typedef struct
 	quat_t quat_ref;			///<	Reference attitude, the errors in roll pitch and yaw will be computed relative to this reference
 	float rpy_errors[3];		///<	Local errors: roll, pitch and yaw
 	const ahrs_t* ahrs;			///<	Pointer to AHRS (current attitude), must be updated externally
+	quat_t qe_without_offset;	///		quaternion defining the attitude estimation of the platform during hover
 } attitude_error_estimator_t;
 
 

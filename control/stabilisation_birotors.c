@@ -69,7 +69,7 @@ void stabilisation_birotor_init(attitude_controller_p2_t* stabilisation_birotor,
 	controls->manual.sensitivity_rpy[PITCH] = 1.0f;
 	controls->manual.sensitivity_rpy[YAW] = 1.0f;
 	controls->manual.trim_rpy[ROLL] = 0.0f;
-	controls->manual.trim_rpy[PITCH] = 0.0f;
+	controls->manual.trim_rpy[PITCH] = 0.11f;
 	controls->manual.trim_rpy[YAW] = 0.0f;
 	controls->stabilized.sensitivity_rpy[ROLL] = 0.2f;
 	controls->stabilized.sensitivity_rpy[PITCH] = 0.2f;

@@ -397,7 +397,8 @@ void remote_get_signal_from_remote(remote_t* remote, control_command_t* controls
 {
 	remote_update(remote);
 	
-	controls->manual.trim_rpy[PITCH] = controls->pitch_trim_max/2.0f*(remote_get_pitch_trim(remote) + 1.0f);
+	// channel 8 not working yet
+	// controls->manual.trim_rpy[PITCH] = controls->pitch_trim_max/2.0f*(remote_get_pitch_trim(remote) + 1.0f);
 	
 	controls->rpy[ROLL]= controls->manual.sensitivity_rpy[ROLL]*remote_get_roll(remote) * RC_INPUT_SCALE + controls->manual.trim_rpy[ROLL];
 	controls->rpy[PITCH]= controls->manual.sensitivity_rpy[PITCH]*remote_get_pitch(remote) * RC_INPUT_SCALE + controls->manual.trim_rpy[PITCH];

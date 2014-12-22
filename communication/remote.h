@@ -240,6 +240,15 @@ float remote_get_yaw(const remote_t* remote);
 float remote_get_pitch_offset(const remote_t* remote);
 
 /**
+ * \brief	Returns the pitch trim value from the remote
+ * 
+ * \param	remote				The pointer to the remote structure
+ *
+ * \return	The value of the pitch trim
+ */
+float remote_get_pitch_trim(const remote_t* remote);
+
+/**
  * \brief	Initialise the mode from the remote switches
  * 
  * \param	remote				The pointer to the remote structure

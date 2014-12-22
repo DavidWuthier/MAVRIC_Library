@@ -58,6 +58,7 @@ void stabilisation_init(control_command_t *controls)
 	controls->theading = 0.0f;
 	controls->thrust = -1.0f;
 	controls->pitch_offset = 0.0f;
+	controls->pitch_trim_max = 1.0f;
 	
 	print_util_dbg_print("Stabilisation init.\r\n");
 }

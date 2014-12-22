@@ -246,6 +246,11 @@ float remote_get_pitch_offset(const remote_t* remote)
 	return remote->channels[CHANNEL_AUX1];
 }
 
+float remote_get_pitch_trim(const remote_t* remote)
+{
+	return remote->channels[CHANNEL_AUX2];
+}
+
 
 void remote_mode_init(remote_mode_t* remote_mode, const remote_mode_conf_t* config)
 {
@@ -391,6 +396,8 @@ mav_mode_t remote_mode_get(const remote_t* remote)
 void remote_get_signal_from_remote(remote_t* remote, control_command_t* controls)
 {
 	remote_update(remote);
+	
+	controls->manual.trim_rpy[PITCH] = controls->pitch_trim_max/2.0f*(remote_get_pitch_trim(remote) + 1.0f);
 	
 	controls->rpy[ROLL]= controls->manual.sensitivity_rpy[ROLL]*remote_get_roll(remote) * RC_INPUT_SCALE + controls->manual.trim_rpy[ROLL];
 	controls->rpy[PITCH]= controls->manual.sensitivity_rpy[PITCH]*remote_get_pitch(remote) * RC_INPUT_SCALE + controls->manual.trim_rpy[PITCH];

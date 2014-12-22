@@ -91,6 +91,7 @@ typedef struct
 	model_settings_t manual;
 	model_settings_t stabilized;
 	float pitch_offset;
+	float pitch_trim_max;
 } control_command_t;
 
 /**

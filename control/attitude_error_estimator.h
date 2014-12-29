@@ -71,6 +71,7 @@ typedef struct
 	float rpy_errors[3];		///<	Local errors: roll, pitch and yaw
 	const ahrs_t* ahrs;			///<	Pointer to AHRS (current attitude), must be updated externally
 	quat_t qe_without_offset;	///		quaternion defining the attitude estimation of the platform during hover
+	aero_attitude_t aero_attitude_without_offset;
 } attitude_error_estimator_t;
 
 

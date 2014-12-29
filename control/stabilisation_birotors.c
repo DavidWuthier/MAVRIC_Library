@@ -254,6 +254,9 @@ void stabilisation_birotor_cascade_stabilise(attitude_controller_p2_t* stabilisa
 			
 		stabilisation_birotor->attitude_error_estimator.qe_without_offset =
 			quaternions_multiply(stabilisation_birotor->attitude_error_estimator.ahrs->qe, quaternions_inverse(tot));
+			
+		stabilisation_birotor->attitude_error_estimator.aero_attitude_without_offset =
+			coord_conventions_quat_to_aero(stabilisation_birotor->attitude_error_estimator.qe_without_offset);
 
 		// END OF THE PART OF THE QUATERNION CONTROLLER
 		attitude_error_estimator_update( &stabilisation_birotor->attitude_error_estimator );

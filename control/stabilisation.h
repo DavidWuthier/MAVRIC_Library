@@ -77,6 +77,28 @@ typedef struct
 	float trim_rpy[3];
 } model_settings_t;
 
+typedef enum
+{
+	FULL_MANUAL = 0,
+	STABILIZED = 1,
+} previous_mode_flag_t;
+
+typedef enum
+{
+	TRANSITION_OFF = 0,
+	TRANSITION_IN_PROGRESS = 1,
+	TRANSITION_FINISHED = 2,
+} transition_flag_t;
+
+typedef struct  
+{
+	transition_flag_t transition_flag;
+	previous_mode_flag_t previous_mode_flag;
+	float running_pitch_offset;
+	float negative_rate;
+	float positive_rate;
+} transition_controller_t;
+
 /**
  * \brief	The control command typedef
  */
@@ -92,6 +114,7 @@ typedef struct
 	model_settings_t stabilized;
 	float pitch_offset;
 	float pitch_trim_max;
+	transition_controller_t transition;
 } control_command_t;
 
 /**

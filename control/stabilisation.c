@@ -60,6 +60,12 @@ void stabilisation_init(control_command_t *controls)
 	controls->pitch_offset = 0.0f;
 	controls->pitch_trim_max = 1.0f;
 	
+	controls->transition.transition_flag = TRANSITION_OFF;
+	controls->transition.previous_mode_flag = FULL_MANUAL;
+	controls->transition.running_pitch_offset = 0.0f;
+	controls->transition.negative_rate = 0.4f;
+	controls->transition.positive_rate = 0.3f;
+	
 	print_util_dbg_print("Stabilisation init.\r\n");
 }
 

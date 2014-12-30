@@ -207,7 +207,8 @@ void stabilisation_birotor_cascade_stabilise(attitude_controller_p2_t* stabilisa
 
 		command->attitude.rpy[ROLL] = input.rpy[ROLL];
 		command->attitude.rpy[PITCH] = input.rpy[PITCH];
-		command->attitude.rpy[YAW] = coord_conventions_get_yaw(stabilisation_birotor->attitude_error_estimator.qe_without_offset) + input.rpy[YAW]; // forcing YAW_RELATIVE mode
+		command->attitude.rpy[YAW] =
+			stabilisation_birotor->attitude_error_estimator.aero_attitude_without_offset.rpy[YAW] + input.rpy[YAW]; // forcing YAW_RELATIVE mode
 
 		
 		// PART OF THE QUATERNION CONTROLLER
@@ -233,8 +234,6 @@ void stabilisation_birotor_cascade_stabilise(attitude_controller_p2_t* stabilisa
 		
 		pitch_offset = coord_conventions_quaternion_from_aero(aero_offset);
 		
-	
-	
 		quat_t yaw_offset;
 				
 		aero_attitude_t aero_offset_yaw;
@@ -246,11 +245,7 @@ void stabilisation_birotor_cascade_stabilise(attitude_controller_p2_t* stabilisa
 		
 		quat_t tot = quaternions_multiply(yaw_offset,pitch_offset);
 		
-		
 		stabilisation_birotor->attitude_error_estimator.quat_ref = quaternions_multiply(stabilisation_birotor->attitude_error_estimator.quat_ref, tot);
-		
-		//stabilisation_birotor->attitude_error_estimator.ahrs->qe_without_offset =
-			//quaternions_multiply(stabilisation_birotor->attitude_error_estimator.ahrs->qe, quaternions_inverse(tot));
 			
 		stabilisation_birotor->attitude_error_estimator.qe_without_offset =
 			quaternions_multiply(stabilisation_birotor->attitude_error_estimator.ahrs->qe, quaternions_inverse(tot));

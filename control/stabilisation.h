@@ -99,6 +99,12 @@ typedef struct
 	float positive_rate;
 } transition_controller_t;
 
+typedef enum
+{
+	YAW_RELATIVE_OFF = 0,
+	YAW_RELATIVE_ON = 1,
+} yaw_relative_mode_t;
+
 /**
  * \brief	The control command typedef
  */
@@ -115,6 +121,7 @@ typedef struct
 	float pitch_offset;
 	float pitch_trim_max;
 	transition_controller_t transition;
+	int32_t yaw_relative_mode;					///< the value of the yaw_relative_mode (0: yaw absolute, 1: yaw relative)
 } control_command_t;
 
 /**

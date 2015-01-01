@@ -129,12 +129,12 @@ typedef struct
 	float 						p_gain_rate[3];					///< Proportional gain applied to gyros rates
 	float						stab_angle[3];
 	float						initial_stab_angle[3];
-	// float 						output[3];						///< Output of the controller on the 3 axes
-	control_command_t* controls;					///< The pointer to the control structure
-	stabiliser_stack_birotor_t stabiliser_stack;		///< The pointer to the PID parameters values for the stacked controller
-	const imu_t* imu;								///< The pointer to the IMU structure
-	const position_estimator_t* pos_est;			///< The pointer to the position estimation structure
-	servos_t* servos;								///< The pointer to the servos structure
+	// float 						output[3];					///< Output of the controller on the 3 axes
+	control_command_t* controls;								///< The pointer to the control structure
+	stabiliser_stack_birotor_t stabiliser_stack;				///< The pointer to the PID parameters values for the stacked controller
+	const imu_t* imu;											///< The pointer to the IMU structure
+	const position_estimator_t* pos_est;						///< The pointer to the position estimation structure
+	servos_t* servos;											///< The pointer to the servos structure
 } attitude_controller_p2_t;
 
 

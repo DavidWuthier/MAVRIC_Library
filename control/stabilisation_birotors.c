@@ -207,10 +207,16 @@ void stabilisation_birotor_cascade_stabilise(attitude_controller_p2_t* stabilisa
 
 		command->attitude.rpy[ROLL] = input.rpy[ROLL];
 		command->attitude.rpy[PITCH] = input.rpy[PITCH];
-		command->attitude.rpy[YAW] =
-			stabilisation_birotor->attitude_error_estimator.aero_attitude_without_offset.rpy[YAW] + input.rpy[YAW]; // forcing YAW_RELATIVE mode
-
 		
+		if (stabilisation_birotor->controls->yaw_relative_mode == YAW_RELATIVE_ON)
+		{
+			command->attitude.rpy[YAW] =
+				stabilisation_birotor->attitude_error_estimator.aero_attitude_without_offset.rpy[YAW] + input.rpy[YAW]; // forcing YAW_RELATIVE mode
+		} else if (stabilisation_birotor->controls->yaw_relative_mode == YAW_RELATIVE_OFF)
+		{
+			command->attitude.rpy[YAW] = input.rpy[YAW]; // yaw absolute mode
+		}
+
 		// PART OF THE QUATERNION CONTROLLER
 		// Get attitude command
 		switch ( stabilisation_birotor->attitude_command->mode )
@@ -243,12 +249,12 @@ void stabilisation_birotor_cascade_stabilise(attitude_controller_p2_t* stabilisa
 
 		yaw_offset = coord_conventions_quaternion_from_aero(aero_offset_yaw);
 		
-		quat_t tot = quaternions_multiply(yaw_offset,pitch_offset);
+		quat_t total_offset = quaternions_multiply(yaw_offset,pitch_offset);
 		
-		stabilisation_birotor->attitude_error_estimator.quat_ref = quaternions_multiply(stabilisation_birotor->attitude_error_estimator.quat_ref, tot);
+		stabilisation_birotor->attitude_error_estimator.quat_ref = quaternions_multiply(stabilisation_birotor->attitude_error_estimator.quat_ref, total_offset);
 			
 		stabilisation_birotor->attitude_error_estimator.qe_without_offset =
-			quaternions_multiply(stabilisation_birotor->attitude_error_estimator.ahrs->qe, quaternions_inverse(tot));
+			quaternions_multiply(stabilisation_birotor->attitude_error_estimator.ahrs->qe, quaternions_inverse(total_offset));
 			
 		stabilisation_birotor->attitude_error_estimator.aero_attitude_without_offset =
 			coord_conventions_quat_to_aero(stabilisation_birotor->attitude_error_estimator.qe_without_offset);

@@ -66,6 +66,8 @@ void stabilisation_init(control_command_t *controls)
 	controls->transition.negative_rate = 0.4f;
 	controls->transition.positive_rate = 0.3f;
 	
+	controls->yaw_relative_mode = YAW_RELATIVE_ON;
+	
 	print_util_dbg_print("Stabilisation init.\r\n");
 }
 

@@ -160,6 +160,16 @@ void attitude_controller_p2_init(attitude_controller_p2_t* controller, const att
 void attitude_controller_p2_update(attitude_controller_p2_t* controller,  float offset_angles[3]);
 
 
+/**
+ * \brief							run the transition controller depending on the last MAV mode
+ * 
+ * \param	transition				Pointer to the transition structure
+ * \param	pitch_offset			pointer to the pitch offset value
+ * \param	stabilisation_birotor	pointer to the stabilisation_birotor structure
+ */
+void run_transition_controller(transition_controller_t* transition, float* pitch_offset, attitude_controller_p2_t* stabilisation_birotor);
+
+
 #ifdef __cplusplus
 }
 #endif

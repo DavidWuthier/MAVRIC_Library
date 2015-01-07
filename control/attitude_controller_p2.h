@@ -167,7 +167,7 @@ void attitude_controller_p2_update(attitude_controller_p2_t* controller,  float 
  * \param	pitch_offset			pointer to the pitch offset value
  * \param	stabilisation_birotor	pointer to the stabilisation_birotor structure
  */
-void run_transition_controller(transition_controller_t* transition, float* pitch_offset, attitude_controller_p2_t* stabilisation_birotor);
+void run_transition_controller(transition_controller_t* transition, float pitch_offset, attitude_controller_p2_t* stabilisation_birotor);
 
 
 #ifdef __cplusplus

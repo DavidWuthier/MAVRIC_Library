@@ -130,7 +130,7 @@ void attitude_controller_p2_update(attitude_controller_p2_t* controller, float o
 	controller->torque_command->xyz[2] = controller->p_gain_angle[2] * errors[2] - controller->p_gain_rate[2] * rates[2];
 }
 
-void run_transition_controller(transition_controller_t* transition, float* pitch_offset, attitude_controller_p2_t* stabilisation_birotor)
+void run_transition_controller(transition_controller_t* transition, float pitch_offset, attitude_controller_p2_t* stabilisation_birotor)
 {
 	if (transition->transition_flag == TRANSITION_OFF)
 	{
@@ -140,16 +140,16 @@ void run_transition_controller(transition_controller_t* transition, float* pitch
 			transition->running_pitch_offset = stabilisation_birotor->initial_stab_angle[PITCH];
 		} else if (transition->previous_mode_flag == FULL_MANUAL)
 		{
-			transition->running_pitch_offset = *pitch_offset;
+			transition->running_pitch_offset = pitch_offset;
 		}
 	} else if (transition->transition_flag == TRANSITION_IN_PROGRESS)
 	{
 		if (transition->previous_mode_flag == STABILIZED)
 		{
-			if (transition->running_pitch_offset <= *pitch_offset)
+			if (transition->running_pitch_offset <= pitch_offset)
 			{
 				transition->transition_flag = TRANSITION_FINISHED;
-				transition->running_pitch_offset = *pitch_offset;
+				transition->running_pitch_offset = pitch_offset;
 			} else
 			{
 				transition->running_pitch_offset += STABILISATION_PERIOD*(-transition->negative_rate);
@@ -169,7 +169,7 @@ void run_transition_controller(transition_controller_t* transition, float* pitch
 	{
 		if (transition->previous_mode_flag == STABILIZED)
 		{
-			transition->running_pitch_offset = *pitch_offset;
+			transition->running_pitch_offset = pitch_offset;
 		}
 	}
 	stabilisation_birotor->stab_angle[PITCH] = transition->running_pitch_offset;

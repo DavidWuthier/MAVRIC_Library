@@ -41,6 +41,7 @@
  ******************************************************************************/
 
 
+
 #include "servos_mix_quadcopter_diag.h"
 #include "print_util.h"
 
@@ -119,3 +120,4 @@ void servos_mix_quadcopter_diag_update(servo_mix_quadcotper_diag_t* mix)
 	servos_set_value(mix->servos, mix->motor_rear_right,  motor[2]);
 	servos_set_value(mix->servos, mix->motor_rear_left,   motor[3]);
 }
+

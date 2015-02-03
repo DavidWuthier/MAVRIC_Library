@@ -30,56 +30,96 @@
  ******************************************************************************/
 
 /*******************************************************************************
- * \file stabilisation.c
+ * \file servos_mix_quadcopter_diag.h
  * 
  * \author MAV'RIC Team
- * \author Felix Schill
+ * \author Julien Lecoeur
  *   
- * \brief Executing the PID controllers for stabilization
+ * \brief Links between torque commands and servos PWM command for quadcopters 
+ * in diagonal configuration
  *
  ******************************************************************************/
 
- 
-#include "stabilisation.h"
-#include "print_util.h"
-#include "constants.h"
 
-bool stabilisation_init(control_command_t *controls)
-{
-	bool init_success = true;
-	
-	controls->control_mode = ATTITUDE_COMMAND_MODE;
-	controls->yaw_mode = YAW_RELATIVE;
-	
-	controls->rpy[ROLL] = 0.0f;
-	controls->rpy[PITCH] = 0.0f;
-	controls->rpy[YAW] = 0.0f;
-	controls->tvel[X] = 0.0f;
-	controls->tvel[Y] = 0.0f;
-	controls->tvel[Z] = 0.0f;
-	controls->theading = 0.0f;
-	controls->thrust = -1.0f;
-	controls->pitch_offset = 0.0f;
-	controls->pitch_trim_max = 1.0f;
-	
-	controls->transition.transition_flag = TRANSITION_OFF;
-	controls->transition.previous_mode_flag = FULL_MANUAL;
-	controls->transition.running_pitch_offset = 0.0f;
-	controls->transition.negative_rate = 0.4f;
-	controls->transition.positive_rate = 0.3f;
-	
-	controls->yaw_relative_mode = YAW_RELATIVE_ON;
-	
-	print_util_dbg_print("[STABILISATION] init.\r\n");
-	
-	return init_success;
-}
 
-void stabilisation_run(stabiliser_t *stabiliser, float dt, float errors[]) 
+
+
+#ifdef __cplusplus
+	extern "C" {
+#endif
+
+
+#include "control_command.h"
+#include "servos.h"
+
+
+typedef enum
 {
-	for (int32_t i = 0; i < 3; i++) 
-	{
-		stabiliser->output.rpy[i] =	pid_controller_update_dt(&(stabiliser->rpy_controller[i]),  errors[i], dt);
-	}		
-	stabiliser->output.thrust = pid_controller_update_dt(&(stabiliser->thrust_controller),  errors[3], dt);
-}
+	CW 	= 1,
+	CCW	= -1
+} rot_dir_t;
+
+
+typedef struct
+{
+	uint8_t 	motor_left;
+	uint8_t 	motor_right;
+	uint8_t 	servo_left;
+	uint8_t		servo_right;
+	rot_dir_t 	motor_left_dir;
+	rot_dir_t 	motor_right_dir;
+	rot_dir_t 	servo_left_dir;
+	rot_dir_t 	servo_right_dir;
+	float 		min_thrust;
+	float		max_thrust;
+	float 		min_servo;
+	float		max_servo;
+	
+} servo_mix_birotor_conf_t;
+
+/**
+ * \brief	servos mix structure
+ */
+typedef struct 
+{	
+	uint8_t 	motor_left;
+	uint8_t 	motor_right;
+	uint8_t 	servo_left;
+	uint8_t		servo_right;
+	rot_dir_t 	motor_left_dir;
+	rot_dir_t 	motor_right_dir;
+	rot_dir_t 	servo_left_dir;
+	rot_dir_t 	servo_right_dir;
+	float 		min_thrust;
+	float		max_thrust;
+	float 		min_servo;
+	float		max_servo;
+	torque_command_t* torque_command;
+	thrust_command_t* thrust_command;
+	servos_t*          		servos;
+} servo_mix_birotor_t;
+
+/**
+ * @brief [brief description]
+ * @details [long description]
+ * 
+ * @param servo_mix [description]
+ * @param config [description]
+ * @param torque_command [description]
+ * @param servo_pwm [description]
+ */
+void servo_mix_birotor_init(servo_mix_birotor_t* mix, const servo_mix_birotor_conf_t* config, const torque_command_t* torque_command, const thrust_command_t* thrust_command, servos_t* servos);
+
+
+/**
+ * @brief [brief description]
+ * @details [long description]
+ * 
+ * @param servo_mix [description]
+ */
+void servos_mix_birotor_update(servo_mix_birotor_t* mix);
+
+
+#ifdef __cplusplus
+	}
+#endif

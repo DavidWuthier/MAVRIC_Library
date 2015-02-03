@@ -240,6 +240,24 @@ float remote_get_pitch(const remote_t* remote);
 float remote_get_yaw(const remote_t* remote);
 
 /**
+ * \brief	Returns the pitch offset value from the remote
+ * 
+ * \param	remote				The pointer to the remote structure
+ *
+ * \return	The value of the pitch offset
+ */
+float remote_get_pitch_offset(const remote_t* remote);
+
+/**
+ * \brief	Returns the pitch trim value from the remote
+ * 
+ * \param	remote				The pointer to the remote structure
+ *
+ * \return	The value of the pitch trim
+ */
+float remote_get_pitch_trim(const remote_t* remote);
+
+/**
  * \brief	Initialise the mode from the remote switches
  * 
  * \param	remote_mode			The pointer to the remote mode structure
@@ -264,6 +282,14 @@ void remote_mode_update(remote_t* remote);
 mav_mode_t remote_mode_get(const remote_t* remote);
 
 /**
+ * \brief	Sets the direct command from the remote (rpy and thrust values)
+ * 
+ * \param	remote				The pointer to the remote structure
+ * \param	controls			The pointer to the controls structure
+ */
+void remote_get_signal_from_remote(remote_t* remote, control_command_t * controls);
+
+/**
  * \brief	Sets the attitude command from the remote (rpy and thrust values)
  * 
  * \param	remote				The pointer to the remote structure
@@ -279,6 +305,14 @@ void remote_get_command_from_remote(remote_t* remote, control_command_t * contro
  */
 void remote_get_velocity_vector_from_remote(remote_t* remote, control_command_t* controls);
 
+/**
+ * \brief	Sets the pith offset from the remote with a linear mapping [-1, 1] -> [initial pitch offset, 0]
+ * 
+ * \param	remote						The pointer to the remote structure
+ * \param	attitude controller			The pointer to the attitude controller
+ * \param	initial_pitch_offset		The initial pitch offset
+ */
+void remote_get_pitch_offset_from_remote(remote_t* remote, control_command_t* controls, float initial_pitch_offset);
 
 /**
  * \brief	Compute torque command from the remote

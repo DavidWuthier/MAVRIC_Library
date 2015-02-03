@@ -56,11 +56,13 @@
 
 #include "attitude_controller_p2.h"
 
-void attitude_controller_p2_init(attitude_controller_p2_t* controller, const attitude_controller_p2_conf_t* config, const attitude_command_t* attitude_command, torque_command_t* torque_command, const ahrs_t* ahrs)
+
+void attitude_controller_p2_init(attitude_controller_p2_t* controller, const attitude_controller_p2_conf_t* config, const attitude_command_t* attitude_command, torque_command_t* torque_command,thrust_command_t* thrust_command , const ahrs_t* ahrs)
 {
 	// Init dependencies
 	controller->attitude_command = attitude_command;
 	controller->torque_command   = torque_command;
+	controller->thrust_command	 = thrust_command;
 	controller->ahrs 			 = ahrs;
 
 	// Init attitude error estimator
@@ -76,7 +78,7 @@ void attitude_controller_p2_init(attitude_controller_p2_t* controller, const att
 }
 
 
-void attitude_controller_p2_update(attitude_controller_p2_t* controller)
+void attitude_controller_p2_update(attitude_controller_p2_t* controller, float offset_angles[3])
 {
 	float errors[3];
 	float rates[3];
@@ -90,10 +92,21 @@ void attitude_controller_p2_update(attitude_controller_p2_t* controller)
 			break;
 
 		case ATTITUDE_COMMAND_MODE_RPY:
-			attitude_error_estimator_set_quat_ref_from_rpy( &controller->attitude_error_estimator,
-															controller->attitude_command->rpy );
+			attitude_error_estimator_set_quat_ref_from_rpy( &controller->attitude_error_estimator, 
+															 controller->attitude_command->rpy );
 			break;
 	}
+	quat_t pitch_offset;
+	
+	aero_attitude_t aero_offset;
+	aero_offset.rpy[0] = 0;
+	aero_offset.rpy[1] = offset_angles[1];
+	aero_offset.rpy[2] = 0;
+
+	pitch_offset = coord_conventions_quaternion_from_aero(aero_offset);
+	
+	controller->attitude_error_estimator.quat_ref = quaternions_multiply(controller->attitude_error_estimator.quat_ref,pitch_offset);
+	
 
 	// Get local angular errors
 	attitude_error_estimator_update( &controller->attitude_error_estimator );
@@ -110,4 +123,49 @@ void attitude_controller_p2_update(attitude_controller_p2_t* controller)
 	controller->torque_command->xyz[0] = controller->p_gain_angle[0] * errors[0] - controller->p_gain_rate[0] * rates[0];
 	controller->torque_command->xyz[1] = controller->p_gain_angle[1] * errors[1] - controller->p_gain_rate[1] * rates[1];
 	controller->torque_command->xyz[2] = controller->p_gain_angle[2] * errors[2] - controller->p_gain_rate[2] * rates[2];
+}
+
+void run_transition_controller(transition_controller_t* transition, float pitch_offset, attitude_controller_p2_t* stabilisation_birotor)
+{
+	if (transition->transition_flag == TRANSITION_OFF)
+	{
+		transition->transition_flag = TRANSITION_IN_PROGRESS;
+		if (transition->previous_mode_flag == STABILIZED)
+		{
+			transition->running_pitch_offset = stabilisation_birotor->initial_stab_angle[PITCH];
+		} else if (transition->previous_mode_flag == FULL_MANUAL)
+		{
+			transition->running_pitch_offset = pitch_offset;
+		}
+	} else if (transition->transition_flag == TRANSITION_IN_PROGRESS)
+	{
+		if (transition->previous_mode_flag == STABILIZED)
+		{
+			if (transition->running_pitch_offset <= pitch_offset)
+			{
+				transition->transition_flag = TRANSITION_FINISHED;
+				transition->running_pitch_offset = pitch_offset;
+			} else
+			{
+				transition->running_pitch_offset += STABILISATION_PERIOD*(-transition->negative_rate);
+			}
+		} else if (transition->previous_mode_flag == FULL_MANUAL)
+		{
+			if (transition->running_pitch_offset >= stabilisation_birotor->initial_stab_angle[PITCH])
+			{
+				transition->transition_flag = TRANSITION_FINISHED;
+				transition->running_pitch_offset = stabilisation_birotor->initial_stab_angle[PITCH];
+			} else
+			{
+				transition->running_pitch_offset += STABILISATION_PERIOD*transition->positive_rate;
+			}
+		}
+	} else if (transition->transition_flag == TRANSITION_FINISHED)
+	{
+		if (transition->previous_mode_flag == STABILIZED)
+		{
+			transition->running_pitch_offset = pitch_offset;
+		}
+	}
+	stabilisation_birotor->stab_angle[PITCH] = transition->running_pitch_offset;
 }

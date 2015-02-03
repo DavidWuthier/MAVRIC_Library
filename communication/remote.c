@@ -263,6 +263,16 @@ float remote_get_yaw(const remote_t* remote)
 	return remote->channels[CHANNEL_YAW];
 }
 
+float remote_get_pitch_offset(const remote_t* remote)
+{
+	return remote->channels[CHANNEL_AUX1];
+}
+
+float remote_get_pitch_trim(const remote_t* remote)
+{
+	return remote->channels[CHANNEL_AUX2];
+}
+
 
 void remote_mode_init(remote_mode_t* remote_mode, const remote_mode_conf_t* config)
 {
@@ -402,14 +412,27 @@ mav_mode_t remote_mode_get(const remote_t* remote)
 	return remote->mode.current_desired_mode;
 }
 
-void remote_get_command_from_remote(remote_t* remote, control_command_t* controls)
+void remote_get_signal_from_remote(remote_t* remote, control_command_t* controls)
 {
 	remote_update(remote);
 	
-	controls->rpy[ROLL] 	= remote_get_roll(remote);
-	controls->rpy[PITCH] 	= remote_get_pitch(remote);
-	controls->rpy[YAW] 		= remote_get_yaw(remote);
-	controls->thrust 		= remote_get_throttle(remote);
+	// channel 8 not working yet
+	// controls->manual.trim_rpy[PITCH] = controls->pitch_trim_max/2.0f*(remote_get_pitch_trim(remote) + 1.0f);
+	
+	controls->rpy[ROLL]= controls->manual.sensitivity_rpy[ROLL]*remote_get_roll(remote) * RC_INPUT_SCALE + controls->manual.trim_rpy[ROLL];
+	controls->rpy[PITCH]= controls->manual.sensitivity_rpy[PITCH]*remote_get_pitch(remote) * RC_INPUT_SCALE + controls->manual.trim_rpy[PITCH];
+	controls->rpy[YAW]= controls->manual.sensitivity_rpy[YAW]*remote_get_yaw(remote) * RC_INPUT_SCALE + controls->manual.trim_rpy[YAW];
+	controls->thrust = 1.1f*remote_get_throttle(remote) - 0.1f;
+}
+
+void remote_get_command_from_remote(remote_t* remote, control_command_t* controls)
+{
+	remote_update(remote);
+
+	controls->rpy[ROLL]= controls->stabilized.sensitivity_rpy[ROLL]*remote_get_roll(remote) * RC_INPUT_SCALE + controls->stabilized.trim_rpy[ROLL];
+	controls->rpy[PITCH]= controls->stabilized.sensitivity_rpy[PITCH]*remote_get_pitch(remote) * RC_INPUT_SCALE + controls->stabilized.trim_rpy[PITCH];
+	controls->rpy[YAW]= controls->stabilized.sensitivity_rpy[YAW]*remote_get_yaw(remote) * RC_INPUT_SCALE + controls->stabilized.trim_rpy[YAW];
+	controls->thrust = remote_get_throttle(remote);
 }
 
 void remote_get_velocity_vector_from_remote(remote_t* remote, control_command_t* controls)
@@ -494,4 +517,11 @@ void remote_get_velocity_command(const remote_t* remote, velocity_command_t * co
 	command->xyz[X] = - 10.0f 	* remote_get_pitch(remote);
 	command->xyz[Y] = 10.0f  	* remote_get_roll(remote);
 	command->xyz[Z] = - 1.5f 	* remote_get_throttle(remote);
+}
+
+void remote_get_pitch_offset_from_remote(remote_t* remote, control_command_t* controls, float initial_pitch_offset)
+{
+	remote_update(remote);
+
+	controls->pitch_offset = initial_pitch_offset/2.0f*(1.0f - remote_get_pitch_offset(remote));
 }

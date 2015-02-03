@@ -71,6 +71,40 @@ typedef enum
 	YAW_COORDINATED
 } yaw_mode_t;
 
+typedef struct
+{
+	float sensitivity_rpy[3];
+	float trim_rpy[3];
+} model_settings_t;
+
+typedef enum
+{
+	FULL_MANUAL = 0,
+	STABILIZED = 1,
+} previous_mode_flag_t;
+
+typedef enum
+{
+	TRANSITION_OFF = 0,
+	TRANSITION_IN_PROGRESS = 1,
+	TRANSITION_FINISHED = 2,
+} transition_flag_t;
+
+typedef struct  
+{
+	transition_flag_t transition_flag;
+	previous_mode_flag_t previous_mode_flag;
+	float running_pitch_offset;
+	float negative_rate;
+	float positive_rate;
+} transition_controller_t;
+
+typedef enum
+{
+	YAW_RELATIVE_OFF = 0,
+	YAW_RELATIVE_ON = 1,
+} yaw_relative_mode_t;
+
 /**
  * \brief	The control command typedef
  */
@@ -82,6 +116,12 @@ typedef struct
 	float theading;								///< absolute target heading	
 	control_mode_t control_mode;				///< control mode
 	yaw_mode_t     yaw_mode;					///< yaw mode
+	model_settings_t manual;
+	model_settings_t stabilized;
+	float pitch_offset;
+	float pitch_trim_max;
+	transition_controller_t transition;
+	int32_t yaw_relative_mode;					///< the value of the yaw_relative_mode (0: yaw absolute, 1: yaw relative)
 } control_command_t;
 
 /**

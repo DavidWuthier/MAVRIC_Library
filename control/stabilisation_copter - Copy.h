@@ -149,6 +149,15 @@ void stabilisation_copter_mix_to_servos_diag_quad(control_command_t *control, se
  */
 void stabilisation_copter_mix_to_servos_cross_quad(control_command_t *control, servos_t* servos);
 
+void stabilisation_birotor_mix_to_servos(control_command_t *control, servos_t* servos);
+
+/**
+ * \brief							Mix to servo for configuration birotor
+ *
+ * \param	control					Pointer to controlling inputs
+ * \param	servos					The array of servos structure
+ */
+
 #ifdef __cplusplus
 }
 #endif

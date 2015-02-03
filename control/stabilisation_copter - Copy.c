@@ -62,7 +62,7 @@ bool stabilisation_copter_init(stabilisation_copter_t* stabilisation_copter, sta
 	
 	//init controller
 	controls->control_mode = ATTITUDE_COMMAND_MODE;
-	controls->yaw_mode = YAW_RELATIVE;
+	controls->yaw_mode = YAW_ABSOLUTE;
 	
 	controls->rpy[ROLL] = 0.0f;
 	controls->rpy[PITCH] = 0.0f;
@@ -152,7 +152,7 @@ void stabilisation_copter_cascade_stabilise(stabilisation_copter_t* stabilisatio
 		
 		rpyt_errors[X] = input.tvel[X] - stabilisation_copter->pos_est->vel[X];
 		rpyt_errors[Y] = input.tvel[Y] - stabilisation_copter->pos_est->vel[Y];
-		rpyt_errors[3] = -(input.tvel[Z] - stabilisation_copter->pos_est->vel[Z]);
+		rpyt_errors[Z] = -(input.tvel[Z] - stabilisation_copter->pos_est->vel[Z]);
 		
 		if (stabilisation_copter->controls->yaw_mode == YAW_COORDINATED) 
 		{
@@ -238,6 +238,7 @@ void stabilisation_copter_cascade_stabilise(stabilisation_copter_t* stabilisatio
 		stabilisation_copter_mix_to_servos_cross_quad(&stabilisation_copter->stabiliser_stack.rate_stabiliser.output, stabilisation_copter->servos);
 
 	}
+	#endif
 }
 
 void stabilisation_copter_mix_to_servos_diag_quad(control_command_t *control, servos_t* servos)
@@ -292,4 +293,52 @@ void stabilisation_copter_mix_to_servos_cross_quad(control_command_t *control, s
 	{
 		servos_set_value( servos, i, motor_command[i]);
 	}
+}
+
+void stabilisation_birotor_mix_to_servos(control_command_t *control, servos_t* servos)
+{
+	int32_t i;
+	float motor_command[4];
+
+	//motor_command[MOTOR_LEFT]= control->thrust  +  control->rpy[YAW];
+	//motor_command[MOTOR_RIGHT] =control->thrust -  control->rpy[YAW];
+	//motor_command[SERVO_LEFT] =  S_L_DIR * control->rpy[PITCH] + S_L_DIR * control->rpy[ROLL];
+	//motor_command[SERVO_RIGHT]  = S_R_DIR * control->rpy[PITCH] - S_R_DIR * control->rpy[ROLL];
+	
+	motor_command[MOTOR_LEFT]= control->thrust  -  control->rpy[PITCH];
+	motor_command[MOTOR_RIGHT] =control->thrust +  control->rpy[PITCH];
+	motor_command[SERVO_LEFT] =  S_L_DIR * control->rpy[ROLL] + S_L_DIR * control->rpy[YAW];
+	motor_command[SERVO_RIGHT]  = S_R_DIR * control->rpy[ROLL] - S_R_DIR * control->rpy[YAW];
+	
+	
+	for (i=0; i<2; i++)
+	{
+		if (motor_command[i]<MIN_THRUST_BI)
+		{
+			motor_command[i]=MIN_THRUST_BI;
+		}
+		if (motor_command[i]>MAX_THRUST_BI)
+		{
+			motor_command[i]=MAX_THRUST_BI;
+		}
+	}
+		for (i=2; i<4; i++)
+		{
+			if (motor_command[i]<MIN_SERVO)
+			{
+				motor_command[i]=MIN_SERVO;
+			}
+			if (motor_command[i]>MAX_SERVO)
+			{
+				motor_command[i]=MAX_SERVO;
+			}
+		}
+	for (i=0; i<4; i++)
+	{
+		servos_set_value( servos, i, motor_command[i]);
+}	
+	
+	
+	
+	
 }

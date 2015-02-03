@@ -64,23 +64,26 @@ extern "C" {
 #include "attitude_error_estimator.h"
 #include "control_command.h"
 #include "ahrs.h"
+#include "stabilisation.h"
+#include "imu.h"
+#include "position_estimation.h"
+#include "servos.h"
+#include "mavlink_waypoint_handler.h"
 
-
-/**
- * \brief P^2 Attitude controller structure
+ 
+ /*
+ * \brief Structure containing the stacked controller
  */
-typedef struct 
-{
-	const ahrs_t* 				ahrs; 							///< Pointer to attitude estimation (input)
-	const attitude_command_t* 	attitude_command;				///< Pointer to attitude command (input)
-	torque_command_t*			torque_command;					///< Pointer to torque command (output)
-	attitude_error_estimator_t  attitude_error_estimator;		///< Attitude error estimator
-	float 						p_gain_angle[3];				///< Proportionnal gain for angular errors
-	float 						p_gain_rate[3];					///< Proportionnal gain applied to gyros rates
-} attitude_controller_p2_t;
-
-
-/**
+ typedef struct
+ {
+ stabiliser_t rate_stabiliser;								///< The rate controller structure
+ stabiliser_t attitude_stabiliser;							///< The attitude controller structure
+ stabiliser_t velocity_stabiliser;							///< The velocity controller structure
+ stabiliser_t position_stabiliser;							///< The position controller structure
+ float yaw_coordination_velocity;							///< the yaw coordination value in velocity control mode
+ } stabiliser_stack_birotor_t;
+ 
+ /**
  * \brief P^2 Attitude controller configuration
  */
 typedef struct
@@ -91,6 +94,54 @@ typedef struct
 
 
 /**
+ * \brief Structure containing the pointers to the data needed in this module
+ */
+typedef struct
+{
+	stabiliser_stack_birotor_t stabiliser_stack;		///< The pointer to the PID parameters values for the stacked controller 
+	control_command_t* controls;					///< The pointer to the control structure
+	const imu_t* imu;								///< The pointer to the IMU structure
+	const ahrs_t* ahrs;								///< The pointer to the attitude estimation structure
+	const position_estimator_t* pos_est;			///< The pointer to the position estimation structure
+	servos_t* servos;								///< The pointer to the servos structure
+} stabilise_birotor_t;
+
+
+/**
+ * \brief Structure containing the configuration data
+ */
+typedef struct  
+{
+	stabiliser_stack_birotor_t stabiliser_stack;					///< The pointer to the PID parameters values and output for the stacked controller
+}stabilise_birotor_conf_t;
+
+/**
+ * \brief P^2 Attitude controller structure
+ */
+typedef struct 
+{
+	const ahrs_t* 				ahrs; 							///< Pointer to attitude estimation (input)
+	attitude_command_t* 		attitude_command;				///< Pointer to attitude command (input)
+	torque_command_t*			torque_command;					///< Pointer to torque command (output)
+	thrust_command_t*			thrust_command;					///< Pointer to torque command (output)
+	attitude_error_estimator_t  attitude_error_estimator;		///< Attitude error estimator
+	float 						p_gain_angle[3];				///< Proportional gain for angular errors
+	float 						p_gain_rate[3];					///< Proportional gain applied to gyros rates
+	float						stab_angle[3];
+	float						initial_stab_angle[3];
+	// float 						output[3];					///< Output of the controller on the 3 axes
+	control_command_t* controls;								///< The pointer to the control structure
+	stabiliser_stack_birotor_t stabiliser_stack;				///< The pointer to the PID parameters values for the stacked controller
+	const imu_t* imu;											///< The pointer to the IMU structure
+	const position_estimator_t* pos_est;						///< The pointer to the position estimation structure
+	servos_t* servos;											///< The pointer to the servos structure
+} attitude_controller_p2_t;
+
+
+
+
+
+/**
  * \brief               		Initialises the attitude controller structure
  * 
  * \param 	controller    		Pointer to data structure
@@ -98,7 +149,7 @@ typedef struct
  * \param 	attitude_command 	Pointer to attitude command
  * \param 	ahrs		 		Pointer to the estimated attitude
  */
-void attitude_controller_p2_init(attitude_controller_p2_t* controller, const attitude_controller_p2_conf_t* config, const attitude_command_t* attitude_command, torque_command_t* torque_command, const ahrs_t* ahrs);
+void attitude_controller_p2_init(attitude_controller_p2_t* controller, const attitude_controller_p2_conf_t* config, const attitude_command_t* attitude_command, torque_command_t* torque_command, thrust_command_t* thrust_command , const ahrs_t* ahrs);
 
 
 /**
@@ -106,7 +157,17 @@ void attitude_controller_p2_init(attitude_controller_p2_t* controller, const att
  * 
  * \param 	controller    	Pointer to data structure
  */
-void attitude_controller_p2_update(attitude_controller_p2_t* controller);
+void attitude_controller_p2_update(attitude_controller_p2_t* controller,  float offset_angles[3]);
+
+
+/**
+ * \brief							run the transition controller depending on the last MAV mode
+ * 
+ * \param	transition				Pointer to the transition structure
+ * \param	pitch_offset			pointer to the pitch offset value
+ * \param	stabilisation_birotor	pointer to the stabilisation_birotor structure
+ */
+void run_transition_controller(transition_controller_t* transition, float pitch_offset, attitude_controller_p2_t* stabilisation_birotor);
 
 
 #ifdef __cplusplus

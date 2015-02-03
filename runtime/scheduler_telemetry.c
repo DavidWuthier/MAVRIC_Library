@@ -90,3 +90,58 @@ void scheduler_telemetry_send_rt_stats(const scheduler_t* scheduler, const mavli
 	stab_task->rt_violations = 0;
 	stab_task->delay_max = 0;
 }
+
+
+void scheduler_telemetry_send_test_values(const stabiliser_stack_birotor_t* stabiliser_stack, const mavlink_stream_t* mavlink_stream, mavlink_message_t* msg)
+{
+
+	mavlink_msg_named_value_float_pack(	mavlink_stream->sysid,
+										mavlink_stream->compid,
+										msg,
+										time_keeper_get_millis(),
+										"accu_roll",
+										stabiliser_stack->rate_stabiliser.rpy_controller[ROLL].integrator.accumulator);
+	mavlink_stream_send(mavlink_stream, msg);
+	
+	mavlink_msg_named_value_float_pack(	mavlink_stream->sysid,
+										mavlink_stream->compid,
+										msg,
+										time_keeper_get_millis(),
+										"accu_pitch",
+										stabiliser_stack->rate_stabiliser.rpy_controller[PITCH].integrator.accumulator);
+	mavlink_stream_send(mavlink_stream, msg);
+	
+	mavlink_msg_named_value_float_pack(	mavlink_stream->sysid,
+										mavlink_stream->compid,
+										msg,
+										time_keeper_get_millis(),
+										"accu_yaw",
+										stabiliser_stack->rate_stabiliser.rpy_controller[YAW].integrator.accumulator);
+	mavlink_stream_send(mavlink_stream, msg);
+	
+	mavlink_msg_named_value_float_pack(	mavlink_stream->sysid,
+										mavlink_stream->compid,
+										msg,
+										time_keeper_get_millis(),
+										"output_roll",
+										stabiliser_stack->rate_stabiliser.rpy_controller[ROLL].output);
+	mavlink_stream_send(mavlink_stream, msg);
+	
+	mavlink_msg_named_value_float_pack(	mavlink_stream->sysid,
+										mavlink_stream->compid,
+										msg,
+										time_keeper_get_millis(),
+										"output_pitch",
+										stabiliser_stack->rate_stabiliser.rpy_controller[PITCH].output);
+	mavlink_stream_send(mavlink_stream, msg);
+	
+	mavlink_msg_named_value_float_pack(	mavlink_stream->sysid,
+										mavlink_stream->compid,
+										msg,
+										time_keeper_get_millis(),
+										"output_yaw",
+										stabiliser_stack->rate_stabiliser.rpy_controller[YAW].output);
+	mavlink_stream_send(mavlink_stream, msg);
+
+	
+}

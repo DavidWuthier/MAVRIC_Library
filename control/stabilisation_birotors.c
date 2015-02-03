@@ -43,7 +43,7 @@
 #include "stabilisation_birotors.h"
 #include "print_util.h"
 
-void stabilisation_birotor_init(attitude_controller_p2_t* stabilisation_birotor, stabilise_birotor_conf_t* stabiliser_conf, control_command_t* controls, const imu_t* imu, const ahrs_t* ahrs, const position_estimator_t* pos_est,servos_t* servos/*, const mavlink_stream_t* mavlink_stream*/)
+void stabilisation_birotor_init(attitude_controller_p2_t* stabilisation_birotor, stabilise_birotor_conf_t* stabiliser_conf, control_command_t* controls, const imu_t* imu, const ahrs_t* ahrs, const position_estimation_t* pos_est,servos_t* servos/*, const mavlink_stream_t* mavlink_stream*/)
 {
 	
 	stabilisation_birotor->stabiliser_stack = stabiliser_conf->stabiliser_stack;
@@ -82,7 +82,7 @@ void stabilisation_birotor_init(attitude_controller_p2_t* stabilisation_birotor,
 	print_util_dbg_print("Stabilisation copter init.\r\n");
 }
 
-void stabilisation_birotor_position_hold(attitude_controller_p2_t* stabilisation_birotor, const control_command_t* input, const mavlink_waypoint_handler_t* waypoint_handler, const position_estimator_t* position_estimator)
+void stabilisation_birotor_position_hold(attitude_controller_p2_t* stabilisation_birotor, const control_command_t* input, const mavlink_waypoint_handler_t* waypoint_handler, const position_estimation_t* position_estimator)
 {
 	aero_attitude_t attitude_yaw_inverse;
 	quat_t q_rot;
@@ -112,7 +112,7 @@ void stabilisation_birotor_position_hold(attitude_controller_p2_t* stabilisation
 	
 	pid_output_global[0] = stabilisation_birotor->stabiliser_stack.position_stabiliser.output.rpy[0];
 	pid_output_global[1] = stabilisation_birotor->stabiliser_stack.position_stabiliser.output.rpy[1];
-	pid_output_global[2] = stabilisation_birotor->stabiliser_stack.position_stabiliser.output.thrust + THRUST_HOVER_POINT;
+	pid_output_global[2] = stabilisation_birotor->stabiliser_stack.position_stabiliser.output.thrust;
 	
 	float pid_output_local[3];
 	quaternions_rotate_vector(q_rot, pid_output_global, pid_output_local);

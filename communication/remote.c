@@ -419,9 +419,9 @@ void remote_get_signal_from_remote(remote_t* remote, control_command_t* controls
 	// channel 8 not working yet
 	// controls->manual.trim_rpy[PITCH] = controls->pitch_trim_max/2.0f*(remote_get_pitch_trim(remote) + 1.0f);
 	
-	controls->rpy[ROLL]= controls->manual.sensitivity_rpy[ROLL]*remote_get_roll(remote) * RC_INPUT_SCALE + controls->manual.trim_rpy[ROLL];
-	controls->rpy[PITCH]= controls->manual.sensitivity_rpy[PITCH]*remote_get_pitch(remote) * RC_INPUT_SCALE + controls->manual.trim_rpy[PITCH];
-	controls->rpy[YAW]= controls->manual.sensitivity_rpy[YAW]*remote_get_yaw(remote) * RC_INPUT_SCALE + controls->manual.trim_rpy[YAW];
+	controls->rpy[ROLL]= controls->manual.sensitivity_rpy[ROLL]*remote_get_roll(remote) + controls->manual.trim_rpy[ROLL];
+	controls->rpy[PITCH]= controls->manual.sensitivity_rpy[PITCH]*remote_get_pitch(remote) + controls->manual.trim_rpy[PITCH];
+	controls->rpy[YAW]= controls->manual.sensitivity_rpy[YAW]*remote_get_yaw(remote) + controls->manual.trim_rpy[YAW];
 	controls->thrust = 1.1f*remote_get_throttle(remote) - 0.1f;
 }
 
@@ -429,9 +429,9 @@ void remote_get_command_from_remote(remote_t* remote, control_command_t* control
 {
 	remote_update(remote);
 
-	controls->rpy[ROLL]= controls->stabilized.sensitivity_rpy[ROLL]*remote_get_roll(remote) * RC_INPUT_SCALE + controls->stabilized.trim_rpy[ROLL];
-	controls->rpy[PITCH]= controls->stabilized.sensitivity_rpy[PITCH]*remote_get_pitch(remote) * RC_INPUT_SCALE + controls->stabilized.trim_rpy[PITCH];
-	controls->rpy[YAW]= controls->stabilized.sensitivity_rpy[YAW]*remote_get_yaw(remote) * RC_INPUT_SCALE + controls->stabilized.trim_rpy[YAW];
+	controls->rpy[ROLL]= controls->stabilized.sensitivity_rpy[ROLL]*remote_get_roll(remote) + controls->stabilized.trim_rpy[ROLL];
+	controls->rpy[PITCH]= controls->stabilized.sensitivity_rpy[PITCH]*remote_get_pitch(remote) + controls->stabilized.trim_rpy[PITCH];
+	controls->rpy[YAW]= controls->stabilized.sensitivity_rpy[YAW]*remote_get_yaw(remote) + controls->stabilized.trim_rpy[YAW];
 	controls->thrust = remote_get_throttle(remote);
 }
 

@@ -69,7 +69,7 @@ extern "C" {
  * \param	servos					The pointer to the array of servos command values
  * \param	mavlink_stream			The pointer to the mavlink stream
  */
-void stabilisation_birotor_init(attitude_controller_p2_t* stabilisation_birotor, stabilise_birotor_conf_t* stabiliser_conf, control_command_t* controls, const imu_t* imu, const ahrs_t* ahrs, const position_estimator_t* pos_est,servos_t* servos/*, const mavlink_stream_t* mavlink_stream*/);
+void stabilisation_birotor_init(attitude_controller_p2_t* stabilisation_birotor, stabilise_birotor_conf_t* stabiliser_conf, control_command_t* controls, const imu_t* imu, const ahrs_t* ahrs, const position_estimation_t* pos_est,servos_t* servos/*, const mavlink_stream_t* mavlink_stream*/);
 
 /**
  * \brief							Main Controller for controlling and stabilizing the quad in position (not using velocity control)
@@ -79,7 +79,7 @@ void stabilisation_birotor_init(attitude_controller_p2_t* stabilisation_birotor,
  * \param	waypoint_handler		The waypoint handler structure, to get hold_position coordinates
  * \param	position_estimator		The position estimator structure to compute position error
  */
-void stabilisation_birotor_position_hold(attitude_controller_p2_t* stabilisation_birotor, const control_command_t* input, const mavlink_waypoint_handler_t* waypoint_handler, const position_estimator_t* position_estimator);
+void stabilisation_birotor_position_hold(attitude_controller_p2_t* stabilisation_birotor, const control_command_t* input, const mavlink_waypoint_handler_t* waypoint_handler, const position_estimation_t* position_estimator);
 
 /**
  * \brief							Main Controller for controlling and stabilizing the quad
